@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhiteDark"
+    android:orientation="vertical"
+    tools:context=".FilesActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="7"
+        android:background="@color/colorWhite"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:id="@+id/folders_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/files_bot"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_weight="3"
+        android:background="@color/colorWhite"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/files_bot_up"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="45dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/arrow_up" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/files_bot_left"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="50dp"
+                    android:layout_height="45dp"
+                    android:layout_marginEnd="45dp"
+                    android:background="@drawable/arrow_left" />
+
+                <Button
+                    android:id="@+id/files_bot_right"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="50dp"
+                    android:layout_height="45dp"
+                    android:background="@drawable/arrow_right" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/files_bot_down"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="45dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/arrow_down" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="50dp">
+
+            <Button
+                android:id="@+id/files_bot_enter"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/app_button"
+                android:text="시작"
+                android:textColor="@color/colorWhite" />
+
+            <Button
+                android:id="@+id/files_bot_close"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/app_button"
+                android:text="종료"
+                android:textColor="@color/colorWhite" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

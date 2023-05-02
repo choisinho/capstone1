@@ -250,10 +250,10 @@ public class FilesActivity extends AppCompatActivity {
         for (int i = 0; i < filesBodyLayouts.size(); i++) {
             if (i != focus) {
                 //포커스가 없는 버튼 처리
-//                filesBodyLayouts.get(i).setColor(getDrawable(R.drawable.app_button));
+                filesBodyLayouts.get(i).setColor(getDrawable(R.drawable.app_button));
             } else {
                 //포커스를 가진 버튼 처리
-//                filesBodyLayouts.get(i).setColor(getDrawable(R.drawable.app_button_focussed));
+                filesBodyLayouts.get(i).setColor(getDrawable(R.drawable.app_button_focussed));
             }
         }
     }

@@ -237,10 +237,10 @@ public class FolderActivity extends AppCompatActivity {
         for (int i = 0; i < folderBodyButtons.size(); i++) {
             if (i != focus) {
                 //포커스가 없는 버튼 처리
-//                folderBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button));
+                folderBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button));
             } else {
                 //포커스를 가진 버튼 처리
-//                folderBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button_focussed));
+                folderBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button_focussed));
             }
         }
     }

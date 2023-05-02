@@ -234,10 +234,10 @@ public class SearchActivity extends AppCompatActivity {
         for (int i = 0; i < searchBodyButtons.size(); i++) {
             if (i != focus) {
                 //포커스가 없는 버튼 처리
-//                searchBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button));
+                searchBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button));
             } else {
                 //포커스를 가진 버튼 처리
-//                searchBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button_focussed));
+                searchBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button_focussed));
             }
         }
     }

@@ -1,6 +1,7 @@
 package app.bqlab.febblindrecorder;
 
 import android.Manifest;
+import android.app.job.JobScheduler;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
@@ -15,8 +16,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -41,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
     int focus, soundMenuEnd, soundDisable;
     boolean playing;
     //layouts
-    LinearLayout main, mainBody;
+    FrameLayout main;
+    LinearLayout mainBody;
     List<View> mainBodyButtons;
     //objects
     File mFile;
@@ -50,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     MediaRecorder mRecorder;
     SoundPool mSoundPool;
     Thread speakThread;
+    JoystickView joystickView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         init();
         resetFocus();
         setupSoundPool();
+        setupJoypad();
     }
 
     @Override
@@ -124,51 +130,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        //initialize
         main = findViewById(R.id.main);
         mainBody = findViewById(R.id.main_body);
         mainBodyButtons = new ArrayList<View>();
-        //setup
+
         //포커스 처리를 위해 버튼 리스트에 버튼들 적재
         for (int i = 0; i < mainBody.getChildCount(); i++)
             mainBodyButtons.add(mainBody.getChildAt(i));
         //각 키에 따른 클릭 이벤트 처리
-        findViewById(R.id.main_bot_up).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickUp();
-            }
-        });
-        findViewById(R.id.main_bot_down).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickDown();
-            }
-        });
-        findViewById(R.id.main_bot_right).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickRight();
-            }
-        });
-        findViewById(R.id.main_bot_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickLeft();
-            }
-        });
-        findViewById(R.id.main_bot_enter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickVToggle();
-            }
-        });
-        findViewById(R.id.main_bot_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickXToggle();
-            }
-        });
+//        findViewById(R.id.main_bot_up).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                clickUp();
+//            }
+//        });
+//        findViewById(R.id.main_bot_down).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                clickDown();
+//            }
+//        });
+//        findViewById(R.id.main_bot_right).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                clickRight();
+//            }
+//        });
+//        findViewById(R.id.main_bot_left).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                clickLeft();
+//            }
+//        });
+//        findViewById(R.id.main_bot_enter).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                clickVToggle();
+//            }
+//        });
+//        findViewById(R.id.main_bot_close).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                clickXToggle();
+//            }
+//        });
     }
 
     private void clickUp() {
@@ -283,6 +288,24 @@ public class MainActivity extends AppCompatActivity {
         soundDisable = mSoundPool.load(this, R.raw.app_sound_disable, 0);
     }
 
+    private void setupJoypad() {
+        joystickView = new JoystickView(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        joystickView.setLayoutParams(params);
+        joystickView.setJoystickListener(new JoystickView.JoystickListener() {
+            @Override
+            public void onJoystickMoved(float xPercent, float yPercent) {
+                Log.d("joystick", "moving");
+            }
+
+            @Override
+            public void onJoystickReleased(int id) {
+                Log.d("joystick", "stop");
+            }
+        });
+        main.addView(joystickView);
+    }
+
     private void setupTTS() {
         //TTS 지원 확인 및 속성 세팅
         mTTS = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
@@ -316,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void speak(String text) {
         //TTS에 음성 출력 명령
+        Log.d("speak", text);
         mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
 

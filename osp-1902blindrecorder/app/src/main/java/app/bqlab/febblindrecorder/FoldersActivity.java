@@ -305,6 +305,7 @@ public class FoldersActivity extends AppCompatActivity {
     }
 
     private void speak(String text) {
+        Log.d("speak", text);
         mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
 

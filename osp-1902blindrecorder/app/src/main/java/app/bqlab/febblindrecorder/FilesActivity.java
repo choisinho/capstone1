@@ -8,6 +8,7 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -301,6 +302,7 @@ public class FilesActivity extends AppCompatActivity {
     }
 
     private void speak(String text) {
+        Log.d("speak", text);
         mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
 

@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     int focus, soundMenuEnd, soundDisable;
     boolean playing;
     //layouts
-    FrameLayout main;
+    LinearLayout main;
     LinearLayout mainBody;
     List<View> mainBodyButtons;
     //objects
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     MediaRecorder mRecorder;
     SoundPool mSoundPool;
     Thread speakThread;
-    JoystickView joystickView;
+    GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         init();
         resetFocus();
         setupSoundPool();
-        setupJoypad();
     }
 
     @Override
@@ -129,6 +129,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
     private void init() {
         main = findViewById(R.id.main);
         mainBody = findViewById(R.id.main_body);
@@ -137,43 +143,9 @@ public class MainActivity extends AppCompatActivity {
         //포커스 처리를 위해 버튼 리스트에 버튼들 적재
         for (int i = 0; i < mainBody.getChildCount(); i++)
             mainBodyButtons.add(mainBody.getChildAt(i));
-        //각 키에 따른 클릭 이벤트 처리
-//        findViewById(R.id.main_bot_up).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                clickUp();
-//            }
-//        });
-//        findViewById(R.id.main_bot_down).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                clickDown();
-//            }
-//        });
-//        findViewById(R.id.main_bot_right).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                clickRight();
-//            }
-//        });
-//        findViewById(R.id.main_bot_left).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                clickLeft();
-//            }
-//        });
-//        findViewById(R.id.main_bot_enter).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                clickVToggle();
-//            }
-//        });
-//        findViewById(R.id.main_bot_close).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                clickXToggle();
-//            }
-//        });
+
+        //제스쳐 디텍터
+        gestureDetector = new GestureDetector(this, new MyGestureListener());
     }
 
     private void clickUp() {
@@ -286,24 +258,6 @@ public class MainActivity extends AppCompatActivity {
         //두 효과음 SoundPool에 등록
         soundMenuEnd = mSoundPool.load(this, R.raw.app_sound_menu_end, 0);
         soundDisable = mSoundPool.load(this, R.raw.app_sound_disable, 0);
-    }
-
-    private void setupJoypad() {
-        joystickView = new JoystickView(this);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        joystickView.setLayoutParams(params);
-        joystickView.setJoystickListener(new JoystickView.JoystickListener() {
-            @Override
-            public void onJoystickMoved(float xPercent, float yPercent) {
-                Log.d("joystick", "moving");
-            }
-
-            @Override
-            public void onJoystickReleased(int id) {
-                Log.d("joystick", "stop");
-            }
-        });
-        main.addView(joystickView);
     }
 
     private void setupTTS() {
@@ -478,6 +432,44 @@ public class MainActivity extends AppCompatActivity {
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
                 || (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+        }
+    }
+
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            float diffX = event2.getX() - event1.getX();
+            float diffY = event2.getY() - event1.getY();
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        // 오른쪽 스와이프
+                        Toast.makeText(MainActivity.this, "→", Toast.LENGTH_SHORT).show();
+                        clickRight();
+                    } else {
+                        // 왼쪽 스와이프
+                        Toast.makeText(MainActivity.this, "←", Toast.LENGTH_SHORT).show();
+                        clickLeft();
+                    }
+                }
+            } else {
+                if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        // 아래로 스와이프
+                        Toast.makeText(MainActivity.this, "↓", Toast.LENGTH_SHORT).show();
+                        clickDown();
+                    } else {
+                        // 위로 스와이프
+                        Toast.makeText(MainActivity.this, "↑", Toast.LENGTH_SHORT).show();
+                        clickUp();
+                    }
+                }
+            }
+            return super.onFling(event1, event2, velocityX, velocityY);
         }
     }
 }

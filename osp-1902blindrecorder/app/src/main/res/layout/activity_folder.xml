@@ -9,10 +9,12 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:layout_marginBottom="200dp"
-        android:background="@color/colorWhite">
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="7"
+        android:background="@color/colorWhite"
+        android:overScrollMode="never">
 
         <LinearLayout
             android:id="@+id/folder_body"

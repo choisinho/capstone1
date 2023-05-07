@@ -11,7 +11,9 @@ import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -37,6 +39,7 @@ public class FolderActivity extends AppCompatActivity {
     TextToSpeech mTTS;
     SoundPool mSoundPool;
     Thread speakThread;
+    GestureDetector gestureDetector;
     //layouts
     LinearLayout folderBody;
     List<View> folderBodyButtons;
@@ -90,6 +93,12 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == SPEECH_TO_TEXT) {
@@ -137,43 +146,9 @@ public class FolderActivity extends AppCompatActivity {
         fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장";
         for (int i = 0; i < folderBody.getChildCount(); i++)
             folderBodyButtons.add(folderBody.getChildAt(i));
-        //setting
-        findViewById(R.id.folder_bot_up).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickUp();
-            }
-        });
-        findViewById(R.id.folder_bot_down).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickDown();
-            }
-        });
-        findViewById(R.id.folder_bot_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickLeft();
-            }
-        });
-        findViewById(R.id.folder_bot_right).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickRight();
-            }
-        });
-        findViewById(R.id.folder_bot_enter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickVToggle();
-            }
-        });
-        findViewById(R.id.folder_bot_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickXToggle();
-            }
-        });
+
+        //제스처
+        gestureDetector = new GestureDetector(this, new FolderActivity.MyGestureListener());
     }
 
     private void clickUp() {
@@ -339,5 +314,43 @@ public class FolderActivity extends AppCompatActivity {
             }
         });
         speakThread.start();
+    }
+
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            float diffX = event2.getX() - event1.getX();
+            float diffY = event2.getY() - event1.getY();
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        // 오른쪽 스와이프
+                        Toast.makeText(FolderActivity.this, "→", Toast.LENGTH_SHORT).show();
+                        clickRight();
+                    } else {
+                        // 왼쪽 스와이프
+                        Toast.makeText(FolderActivity.this, "←", Toast.LENGTH_SHORT).show();
+                        clickLeft();
+                    }
+                }
+            } else {
+                if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        // 아래로 스와이프
+                        Toast.makeText(FolderActivity.this, "↓", Toast.LENGTH_SHORT).show();
+                        clickDown();
+                    } else {
+                        // 위로 스와이프
+                        Toast.makeText(FolderActivity.this, "↑", Toast.LENGTH_SHORT).show();
+                        clickUp();
+                    }
+                }
+            }
+            return super.onFling(event1, event2, velocityX, velocityY);
+        }
     }
 }

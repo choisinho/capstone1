@@ -1,15 +1,25 @@
 package app.bqlab.febblindrecorder;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -27,15 +37,18 @@ public class FoldersActivity extends AppCompatActivity {
 
     //constants
     final String TAG = "FoldersActivity";
+    final int SPEECH_TO_TEXT = 1000;
     //variables
     boolean clicked;
     int focus, soundMenuEnd, soundDisable;
     String folderDir;
     String[] folderNames;
+    ArrayList<String> speech;
     //objects
     TextToSpeech mTTS;
     SoundPool mSoundPool;
     Thread speakThread;
+    GestureDetector gestureDetector;
     //layouts
     LinearLayout foldersBody;
     List<FileLayout> foldersBodyLayouts;
@@ -64,28 +77,28 @@ public class FoldersActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_UP:
-                clickRight();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                clickLeft();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                clickUp();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                clickDown();
-                return true;
-            case KeyEvent.KEYCODE_BUTTON_X:
-                clickVToggle();
-                return true;
-            case KeyEvent.KEYCODE_BUTTON_B:
-                clickXToggle();
-                return true;
-            default:
-                return true;
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == SPEECH_TO_TEXT) {
+                if (data != null) {
+                    speech = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    Log.d("speech", speech.get(0));
+                    switch (speech.get(0)) {
+                        case "변경":
+                            changeFolder();
+                            break;
+                        case "삭제" :
+                            deleteFolder();
+                            break;
+                    }
+                }
+            }
         }
     }
 
@@ -94,43 +107,8 @@ public class FoldersActivity extends AppCompatActivity {
         foldersBody = findViewById(R.id.folders_body);
         foldersBodyLayouts = new ArrayList<>();
         folderDir = Environment.getExternalStorageDirectory() + File.separator + "음성메모장";
-        //setup
-        findViewById(R.id.folders_bot_up).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickUp();
-            }
-        });
-        findViewById(R.id.folders_bot_down).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickDown();
-            }
-        });
-        findViewById(R.id.folders_bot_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickLeft();
-            }
-        });
-        findViewById(R.id.folders_bot_right).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickRight();
-            }
-        });
-        findViewById(R.id.folders_bot_enter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickVToggle();
-            }
-        });
-        findViewById(R.id.folders_bot_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickXToggle();
-            }
-        });
+        //제스처
+        gestureDetector = new GestureDetector(this, new FoldersActivity.MyGestureListener());
     }
 
     private void clickUp() {
@@ -168,11 +146,14 @@ public class FoldersActivity extends AppCompatActivity {
         }
     }
 
+    //변경할 아이디어 롱프레스 하면 TTS가 나타난다.
+    //TTS가 말을 한다. 변경을 하려면 변경, 삭제를 원하면 삭제를 말하세요.
+    //변경, 삭제 둘다 가능한데 그외 기능은 만들지 말자.
     private void clickRight() {
         mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
     }
 
-    private void clickVToggle() {
+    private void changeFolder() {
         shutupTTS();
         String folderName = folderNames[focus];
         if (new File(folderDir, folderName).exists()) {
@@ -194,45 +175,21 @@ public class FoldersActivity extends AppCompatActivity {
         }
     }
 
-    private void clickXToggle() {
+    private void deleteFolder() {
         shutupTTS();
-        if (clicked) {
-            //두번째 클릭
-            File file = new File(folderDir, folderNames[focus]);
-            boolean success = file.delete();
-            if (!success) {
-                speakThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        speak("폴더를 비우고 다시 시도하세요.");
-                    }
-                });
-                speakThread.start();
-            }
-            loadFolders();
-            resetFocus();
-        } else {
-            //첫번째 클릭
-            clicked = true;
+        File file = new File(folderDir, folderNames[focus]);
+        boolean success = file.delete();
+        if (!success) {
             speakThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    speak("한번 더 누르면 폴더가 삭제됩니다.");
+                    speak("폴더를 비우고 다시 시도하세요.");
                 }
             });
             speakThread.start();
-            new CountDownTimer(6000, 1000) { //딜레이 동안 한번 더 토글 클릭 입력시 파일 삭제
-                @Override
-                public void onTick(long millisUntilFinished) {
-
-                }
-
-                @Override
-                public void onFinish() {
-                    clicked = false;
-                }
-            }.start();
         }
+        loadFolders();
+        resetFocus();
     }
 
     private void loadFolders() {
@@ -309,6 +266,15 @@ public class FoldersActivity extends AppCompatActivity {
         mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
 
+    private void vibrate(long m) {
+        Log.d("vibrate", String.valueOf(m));
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        try {
+            vibrator.vibrate(VibrationEffect.createOneShot(m, VibrationEffect.DEFAULT_AMPLITUDE));
+        } catch (Exception ignored) {
+        }
+    }
+
     private void speakFirst() {
         speakThread = new Thread(new Runnable() {
             @Override
@@ -331,7 +297,7 @@ public class FoldersActivity extends AppCompatActivity {
         long lastModified = new File(folderDir, folderName).lastModified();
         Date lastModifiedTime = new Date();
         lastModifiedTime.setTime(lastModified);
-        String lastModifiedDay = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREA).format(lastModifiedTime);
+        String lastModifiedDay = new SimpleDateFormat("마지막으로 수정된 날짜는 yyyy년 MM월 dd일입니다. 이 폴더로 변경하시려면 스크린을 1초 이상 터치하세요.", Locale.KOREA).format(lastModifiedTime);
         String currentYear = new SimpleDateFormat("yyyy", Locale.KOREA).format(Calendar.getInstance().getTime());
         if (new SimpleDateFormat("yyyy", Locale.KOREA).format(lastModifiedTime).equals(currentYear))
             lastModifiedDay = lastModifiedDay.replace(currentYear + "년", "");
@@ -349,5 +315,70 @@ public class FoldersActivity extends AppCompatActivity {
             }
         });
         speakThread.start();
+    }
+
+    private void requestSpeech() {
+        shutupTTS();
+        speakThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    vibrate(1000);
+                    speak("폴더를 변경하시려면 변경을, 삭제하시려면 삭제를 말씀해주세요.");
+                    Thread.sleep(6500);
+                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREA);
+                    intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "변경 또는 삭제를 말씀하세요.");
+                    startActivityForResult(intent, SPEECH_TO_TEXT);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        speakThread.start();
+    }
+
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            float diffX = event2.getX() - event1.getX();
+            float diffY = event2.getY() - event1.getY();
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        // 오른쪽 스와이프
+                        Toast.makeText(FoldersActivity.this, "→", Toast.LENGTH_SHORT).show();
+                        clickRight();
+                    } else {
+                        // 왼쪽 스와이프
+                        Toast.makeText(FoldersActivity.this, "←", Toast.LENGTH_SHORT).show();
+                        clickLeft();
+                    }
+                }
+            } else {
+                if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        // 아래로 스와이프
+                        Toast.makeText(FoldersActivity.this, "↓", Toast.LENGTH_SHORT).show();
+                        clickDown();
+                    } else {
+                        // 위로 스와이프
+                        Toast.makeText(FoldersActivity.this, "↑", Toast.LENGTH_SHORT).show();
+                        clickUp();
+                    }
+                }
+            }
+            return super.onFling(event1, event2, velocityX, velocityY);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent event) {
+            requestSpeech();
+        }
     }
 }

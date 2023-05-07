@@ -108,33 +108,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onTouchEvent(event);
     }
 
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            //각 키에 따른 기능 구현
-            case KeyEvent.KEYCODE_DPAD_UP:
-                clickRight();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                clickLeft();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                clickUp();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                clickDown();
-                return true;
-            case KeyEvent.KEYCODE_BUTTON_X:
-                clickVToggle();
-                return true;
-            case KeyEvent.KEYCODE_BUTTON_B:
-                clickXToggle();
-                return true;
-            default:
-                return true;
-        }
-    }
-
     private void init() {
         main = findViewById(R.id.main);
         mainBody = findViewById(R.id.main_body);
@@ -428,10 +401,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestPermissions() {
-        //권한 체크
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
-                || (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+        List<String> permissionsToRequest = new ArrayList<>();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+            permissionsToRequest.add(Manifest.permission.RECORD_AUDIO);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE) != PackageManager.PERMISSION_GRANTED)
+            permissionsToRequest.add(Manifest.permission.VIBRATE);
+
+        if (!permissionsToRequest.isEmpty()) {
+            String[] permissionsArray = permissionsToRequest.toArray(new String[0]);
+            ActivityCompat.requestPermissions(this, permissionsArray, 0);
         }
     }
 

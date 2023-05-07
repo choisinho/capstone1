@@ -67,32 +67,6 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_UP:
-                clickRight();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                clickLeft();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                clickUp();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                clickDown();
-                return true;
-            case KeyEvent.KEYCODE_BUTTON_X:
-                clickVToggle();
-                return true;
-            case KeyEvent.KEYCODE_BUTTON_B:
-                clickXToggle();
-                return true;
-            default:
-                return true;
-        }
-    }
-
-    @Override
     public boolean onTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
@@ -183,7 +157,8 @@ public class FolderActivity extends AppCompatActivity {
         shutupTTS();
         switch (focus) {
             case FOLDER_CREATE:
-                requestSpeech();
+                if(!isFoldersEnough())
+                    requestSpeech();
                 break;
             case FOLDER_CHANGE:
                 if (new File(fileDir).list().length != 0)
@@ -199,14 +174,6 @@ public class FolderActivity extends AppCompatActivity {
                 }
                 break;
         }
-    }
-
-    private void clickVToggle() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-    }
-
-    private void clickXToggle() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
     }
 
     private void resetFocus() {
@@ -297,6 +264,7 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     private void requestSpeech() {
+        shutupTTS();
         speakThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -314,6 +282,26 @@ public class FolderActivity extends AppCompatActivity {
             }
         });
         speakThread.start();
+    }
+
+    public boolean isFoldersEnough() {
+        String folderPath = Environment.getExternalStorageDirectory() + File.separator + "음성메모장" + File.separator;
+        File folder = new File(folderPath);
+        File[] files = folder.listFiles();
+        int folderCount = 0;
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    folderCount++;
+                }
+            }
+            return folderCount >= 4;
+        } else {
+            Log.d("folderCount", String.valueOf(folderCount));
+            speak("폴더를 더이상 만들 수 없습니다.");
+            return false;
+        }
     }
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {

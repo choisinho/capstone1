@@ -1,6 +1,7 @@
 package app.bqlab.febblindrecorder;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
@@ -8,11 +9,15 @@ import android.media.MediaRecorder;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -36,6 +41,7 @@ public class PlayActivity extends AppCompatActivity {
     HashMap<String, String> mTTSMap;
     SoundPool mSoundPool;
     Thread speakThread;
+    GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,29 +73,9 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_UP:
-                clickRight();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                clickLeft();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                clickUp();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                clickDown();
-                return true;
-            case KeyEvent.KEYCODE_BUTTON_X:
-                clickVToggle();
-                return true;
-            case KeyEvent.KEYCODE_BUTTON_B:
-                clickXToggle();
-                return true;
-            default:
-                return true;
-        }
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     private void init() {
@@ -98,43 +84,8 @@ public class PlayActivity extends AppCompatActivity {
         fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
         fileName = filePath.replace(fileDir + File.separator, "");
         mFile = new File(fileDir, fileName);
-        //setup
-        findViewById(R.id.play_bot_up).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickUp();
-            }
-        });
-        findViewById(R.id.play_bot_down).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickDown();
-            }
-        });
-        findViewById(R.id.play_bot_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickLeft();
-            }
-        });
-        findViewById(R.id.play_bot_right).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickRight();
-            }
-        });
-        findViewById(R.id.play_bot_enter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickVToggle();
-            }
-        });
-        findViewById(R.id.play_bot_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickXToggle();
-            }
-        });
+        //제스처
+        gestureDetector = new GestureDetector(this, new PlayActivity.MyGestureListener());
     }
 
     private void clickUp() {
@@ -161,16 +112,16 @@ public class PlayActivity extends AppCompatActivity {
         mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
     }
 
-    private void clickVToggle() {
+    private void pressPlayButton() {
         shutupTTS();
-        if (playing)
+        if (playing) {
+            vibrate(1000);
             stopPlaying();
-        else
+        }
+        else {
+            vibrate(500);
             startPlaying();
-    }
-
-    private void clickXToggle() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
+        }
     }
 
     private void setupSoundPool() {
@@ -275,6 +226,15 @@ public class PlayActivity extends AppCompatActivity {
         speakThread.start();
     }
 
+    private void vibrate(long m) {
+        Log.d("vibrate", String.valueOf(m));
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        try {
+            vibrator.vibrate(VibrationEffect.createOneShot(m, VibrationEffect.DEFAULT_AMPLITUDE));
+        } catch (Exception ignored) {
+        }
+    }
+
     private void startPlaying() {
         if (!playing) {
             //MediaRecorder 속성 세팅 (확장자, 코덱 등)
@@ -314,7 +274,7 @@ public class PlayActivity extends AppCompatActivity {
                     }
                 }
             }).start();
-            findViewById(R.id.play_button).setBackground(getDrawable(R.drawable.play_button_stop));
+            findViewById(R.id.play_button).setBackground(getDrawable(R.drawable.speaker_on));
         } else
             Toast.makeText(this, "이미 파일을 재생하는 중입니다.", Toast.LENGTH_LONG).show();
     }
@@ -329,6 +289,50 @@ public class PlayActivity extends AppCompatActivity {
             mPlayer = null;
         }
         playing = false;
-        findViewById(R.id.play_button).setBackground(getDrawable(R.drawable.play_button_play));
+        findViewById(R.id.play_button).setBackground(getDrawable(R.drawable.speaker_off));
+    }
+
+
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            float diffX = event2.getX() - event1.getX();
+            float diffY = event2.getY() - event1.getY();
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        // 오른쪽 스와이프
+                        Toast.makeText(PlayActivity.this, "→", Toast.LENGTH_SHORT).show();
+                        clickRight();
+                    } else {
+                        // 왼쪽 스와이프
+                        Toast.makeText(PlayActivity.this, "←", Toast.LENGTH_SHORT).show();
+                        clickLeft();
+                    }
+                }
+            } else {
+                if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        // 아래로 스와이프
+                        Toast.makeText(PlayActivity.this, "↓", Toast.LENGTH_SHORT).show();
+                        clickDown();
+                    } else {
+                        // 위로 스와이프
+                        Toast.makeText(PlayActivity.this, "↑", Toast.LENGTH_SHORT).show();
+                        clickUp();
+                    }
+                }
+            }
+            return super.onFling(event1, event2, velocityX, velocityY);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent event) {
+            pressPlayButton();
+        }
     }
 }

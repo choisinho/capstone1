@@ -456,7 +456,6 @@ public class MenuActivity extends AppCompatActivity {
         speakThread.start();
     }
 
-
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_THRESHOLD = 100;
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;

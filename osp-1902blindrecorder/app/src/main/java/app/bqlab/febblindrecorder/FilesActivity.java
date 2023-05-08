@@ -1,15 +1,20 @@
 package app.bqlab.febblindrecorder;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -31,6 +36,7 @@ public class FilesActivity extends AppCompatActivity {
     TextToSpeech mTTS;
     SoundPool mSoundPool;
     Thread speakThread;
+    GestureDetector gestureDetector;
     //layouts
     LinearLayout filesBody;
     List<FileLayout> filesBodyLayouts;
@@ -65,29 +71,9 @@ public class FilesActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_DPAD_UP:
-                clickRight();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                clickLeft();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                clickUp();
-                return true;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                clickDown();
-                return true;
-            case KeyEvent.KEYCODE_BUTTON_X:
-                clickVToggle();
-                return true;
-            case KeyEvent.KEYCODE_BUTTON_B:
-                clickXToggle();
-                return true;
-            default:
-                return true;
-        }
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     private void init() {
@@ -95,43 +81,8 @@ public class FilesActivity extends AppCompatActivity {
         filesBody = findViewById(R.id.folders_body);
         filesBodyLayouts = new ArrayList<FileLayout>();
         fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
-        //setup
-        findViewById(R.id.files_bot_up).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickUp();
-            }
-        });
-        findViewById(R.id.files_bot_down).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickDown();
-            }
-        });
-        findViewById(R.id.files_bot_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickLeft();
-            }
-        });
-        findViewById(R.id.files_bot_right).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickRight();
-            }
-        });
-        findViewById(R.id.files_bot_enter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickVToggle();
-            }
-        });
-        findViewById(R.id.files_bot_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickXToggle();
-            }
-        });
+       //제스처
+        gestureDetector = new GestureDetector(this, new FilesActivity.MyGestureListener());
     }
 
     private void clickUp() {
@@ -176,15 +127,12 @@ public class FilesActivity extends AppCompatActivity {
         }
     }
 
-    private void clickVToggle() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-    }
-
-    private void clickXToggle() {
+    private void deleteFile() {
         shutupTTS();
         if (clicked) {
             //두번째 클릭
             try {
+                vibrate(1000);
                 File file = new File(fileDir, fileNames[focus]);
                 boolean success = file.delete();
                 loadFiles();
@@ -198,7 +146,8 @@ public class FilesActivity extends AppCompatActivity {
             speakThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    speak("한번 더 누르면 파일이 삭제됩니다.");
+                    vibrate(500);
+                    speak("다시 한번 스크린을 1초 이상 누르면 파일이 삭제됩니다.");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -334,5 +283,57 @@ public class FilesActivity extends AppCompatActivity {
             }
         });
         speakThread.start();
+    }
+
+    private void vibrate(long m) {
+        Log.d("vibrate", String.valueOf(m));
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        try {
+            vibrator.vibrate(VibrationEffect.createOneShot(m, VibrationEffect.DEFAULT_AMPLITUDE));
+        } catch (Exception ignored) {
+        }
+    }
+
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            float diffX = event2.getX() - event1.getX();
+            float diffY = event2.getY() - event1.getY();
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        // 오른쪽 스와이프
+                        Toast.makeText(FilesActivity.this, "→", Toast.LENGTH_SHORT).show();
+                        clickRight();
+                    } else {
+                        // 왼쪽 스와이프
+                        Toast.makeText(FilesActivity.this, "←", Toast.LENGTH_SHORT).show();
+                        clickLeft();
+                    }
+                }
+            } else {
+                if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        // 아래로 스와이프
+                        Toast.makeText(FilesActivity.this, "↓", Toast.LENGTH_SHORT).show();
+                        clickDown();
+                    } else {
+                        // 위로 스와이프
+                        Toast.makeText(FilesActivity.this, "↑", Toast.LENGTH_SHORT).show();
+                        clickUp();
+                    }
+                }
+            }
+            return super.onFling(event1, event2, velocityX, velocityY);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent event) {
+            deleteFile();
+        }
     }
 }

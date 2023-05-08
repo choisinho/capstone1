@@ -154,7 +154,6 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     private void clickRight() {
-        shutupTTS();
         switch (focus) {
             case FOLDER_CREATE:
                 if (!isFoldersEnough())
@@ -326,12 +325,11 @@ public class FolderActivity extends AppCompatActivity {
                     folderCount++;
                 }
             }
-            return folderCount >= 4;
-        } else {
             Log.d("folderCount", String.valueOf(folderCount));
             speak("폴더를 더이상 만들 수 없습니다.");
+            return folderCount >= 4;
+        } else
             return false;
-        }
     }
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {

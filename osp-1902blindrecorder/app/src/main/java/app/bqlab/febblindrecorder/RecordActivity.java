@@ -350,7 +350,7 @@ public class RecordActivity extends AppCompatActivity {
                         Thread.sleep(1000);
                         speak("녹음화면");
                         Thread.sleep(1000);
-                        speak("녹음을 시작하려면 시작버튼을 눌러주세요. 녹음이 끝나면 종료버튼을 눌러주세요.");
+                        speak("녹음을 시작하려면 스크린을 1초 이상 눌러주세요. 녹음이 끝나면 스크린을 다시 한번 1초 이상 누르면 됩니다.");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

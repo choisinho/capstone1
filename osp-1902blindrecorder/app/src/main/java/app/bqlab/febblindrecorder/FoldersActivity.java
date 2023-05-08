@@ -146,9 +146,6 @@ public class FoldersActivity extends AppCompatActivity {
         }
     }
 
-    //변경할 아이디어 롱프레스 하면 TTS가 나타난다.
-    //TTS가 말을 한다. 변경을 하려면 변경, 삭제를 원하면 삭제를 말하세요.
-    //변경, 삭제 둘다 가능한데 그외 기능은 만들지 말자.
     private void clickRight() {
         mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
     }
@@ -156,6 +153,27 @@ public class FoldersActivity extends AppCompatActivity {
     private void changeFolder() {
         shutupTTS();
         String folderName = folderNames[focus];
+        if (new File(folderDir, folderName).exists()) {
+            getSharedPreferences("setting", MODE_PRIVATE).edit().putString("SAVE_FOLDER_NAME", folderName).apply();
+            speakThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    speak("폴더가 변경되었습니다.");
+                }
+            });
+            speakThread.start();
+            if (getIntent().getStringExtra("filePath") != null) {
+                Intent i = new Intent(this, MenuActivity.class);
+                i.putExtra("filePath", getIntent().getStringExtra("filePath") + "@folders");
+                startActivity(i);
+            }
+        } else {
+            loadFolders();
+        }
+    }
+
+    private void changeTestFolder(String folderName) {
+        shutupTTS();
         if (new File(folderDir, folderName).exists()) {
             getSharedPreferences("setting", MODE_PRIVATE).edit().putString("SAVE_FOLDER_NAME", folderName).apply();
             speakThread = new Thread(new Runnable() {
@@ -208,6 +226,7 @@ public class FoldersActivity extends AppCompatActivity {
     }
 
     private void resetFocus() {
+        Log.d("focus", String.valueOf(focus));
         for (int i = 0; i < foldersBodyLayouts.size(); i++) {
             if (i != focus) {
                 //포커스가 없는 버튼 처리

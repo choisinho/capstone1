@@ -157,7 +157,7 @@ public class FolderActivity extends AppCompatActivity {
         shutupTTS();
         switch (focus) {
             case FOLDER_CREATE:
-                if(!isFoldersEnough())
+                if (!isFoldersEnough())
                     requestSpeech();
                 break;
             case FOLDER_CHANGE:
@@ -282,6 +282,36 @@ public class FolderActivity extends AppCompatActivity {
             }
         });
         speakThread.start();
+    }
+
+    //테스트용 폴더 생성
+    private void createTestFolder(String folderName) {
+        String filreDir = Environment.getExternalStorageDirectory() + File.separator + "음성메모장" + File.separator + folderName;
+        File newFile = new File(filreDir);
+        boolean success;
+        if (newFile.exists()) {
+            speakThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    speak("이미 폴더가 존재합니다.");
+                }
+            });
+            speakThread.start();
+        } else {
+            success = newFile.mkdir();
+            speakThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        speak("폴더 생성 완료");
+                        Thread.sleep(1500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            speakThread.start();
+        }
     }
 
     public boolean isFoldersEnough() {

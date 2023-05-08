@@ -2,6 +2,7 @@ package app.bqlab.febblindrecorder;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
@@ -9,6 +10,8 @@ import android.media.MediaRecorder;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
@@ -16,10 +19,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.coremedia.iso.boxes.Container;
@@ -51,6 +55,7 @@ public class RecordActivity extends AppCompatActivity {
     SoundPool mSoundPool;
     TextToSpeech mTTS;
     Thread speakThread;
+    GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,14 +105,20 @@ public class RecordActivity extends AppCompatActivity {
                 clickDown();
                 return true;
             case KeyEvent.KEYCODE_BUTTON_X:
-                clickVToggle();
+                pressStartButton();
                 return true;
             case KeyEvent.KEYCODE_BUTTON_B:
-                clickXToggle();
+                pressStopButton();
                 return true;
             default:
                 return true;
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -127,43 +138,8 @@ public class RecordActivity extends AppCompatActivity {
         //initialize
         sourcePathes = new ArrayList<>();
         fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
-        //setup
-        findViewById(R.id.record_bot_up).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickUp();
-            }
-        });
-        findViewById(R.id.record_bot_down).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickDown();
-            }
-        });
-        findViewById(R.id.record_bot_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickLeft();
-            }
-        });
-        findViewById(R.id.record_bot_right).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickRight();
-            }
-        });
-        findViewById(R.id.record_bot_enter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickVToggle();
-            }
-        });
-        findViewById(R.id.record_bot_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickXToggle();
-            }
-        });
+        //제스처
+        gestureDetector = new GestureDetector(this, new RecordActivity.MyGestureListener());
     }
 
     private void clickUp() {
@@ -183,7 +159,8 @@ public class RecordActivity extends AppCompatActivity {
         mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
     }
 
-    private void clickVToggle() {
+    private void pressStartButton() {
+        shutupTTS();
         if (!recording) {
             mSoundPool.play(soundStartEnd, 1, 1, 0, 0, 1);
             startRecording();
@@ -193,7 +170,7 @@ public class RecordActivity extends AppCompatActivity {
         }
     }
 
-    private void clickXToggle() {
+    private void pressStopButton() {
         shutupTTS();
         if (recording)
             stopRecording();
@@ -310,9 +287,7 @@ public class RecordActivity extends AppCompatActivity {
             FileChannel fileChannel = new RandomAccessFile(target, "rw").getChannel();
             container.writeContainer(fileChannel);
             fileChannel.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
     }
@@ -385,6 +360,15 @@ public class RecordActivity extends AppCompatActivity {
         }
     }
 
+    private void vibrate(long m) {
+        Log.d("vibrate", String.valueOf(m));
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        try {
+            vibrator.vibrate(VibrationEffect.createOneShot(m, VibrationEffect.DEFAULT_AMPLITUDE));
+        } catch (Exception ignored) {
+        }
+    }
+
     private void checkResumedFile() {
         //이어서 녹음 버튼을 클릭했을 시 소스파일을 인식해야 함
         //작업과정: 녹화시작 -> 녹화종료 -> 1592..로 된 소스파일 생성 -> @토글클릭 -> 소스파일 모두 병합 -> 메뉴화면으로 이동(소스파일명 전달됨) -> 이어서 녹음
@@ -397,43 +381,6 @@ public class RecordActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            //하단메뉴(일명 조이패드) 레이아웃 비활성화
-                            findViewById(R.id.record_bot_up).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-                                }
-                            });
-                            findViewById(R.id.record_bot_down).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-                                }
-                            });
-                            findViewById(R.id.record_bot_left).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-                                }
-                            });
-                            findViewById(R.id.record_bot_right).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-                                }
-                            });
-                            findViewById(R.id.record_bot_enter).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-                                }
-                            });
-                            findViewById(R.id.record_bot_close).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-                                }
-                            });
                             try {
                                 Thread.sleep(1000);
                                 speak("잠시 후 녹음이 다시 진행됩니다.");
@@ -441,43 +388,6 @@ public class RecordActivity extends AppCompatActivity {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            //녹음이 시작되고 나서부터는 하단메뉴 활성화(버그를 해결하기 위해 채택된 최선의 방법)
-                            findViewById(R.id.record_bot_up).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    clickUp();
-                                }
-                            });
-                            findViewById(R.id.record_bot_down).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    clickDown();
-                                }
-                            });
-                            findViewById(R.id.record_bot_left).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    clickLeft();
-                                }
-                            });
-                            findViewById(R.id.record_bot_right).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    clickRight();
-                                }
-                            });
-                            findViewById(R.id.record_bot_enter).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    clickVToggle();
-                                }
-                            });
-                            findViewById(R.id.record_bot_close).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    clickXToggle();
-                                }
-                            });
                             if (!recording) {
                                 startRecording();
                             } else {
@@ -491,5 +401,53 @@ public class RecordActivity extends AppCompatActivity {
             resuming = true;
         } else
             resuming = false;
+    }
+
+
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            float diffX = event2.getX() - event1.getX();
+            float diffY = event2.getY() - event1.getY();
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        // 오른쪽 스와이프
+                        Toast.makeText(RecordActivity.this, "→", Toast.LENGTH_SHORT).show();
+                        clickRight();
+                    } else {
+                        // 왼쪽 스와이프
+                        Toast.makeText(RecordActivity.this, "←", Toast.LENGTH_SHORT).show();
+                        clickLeft();
+                    }
+                }
+            } else {
+                if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        // 아래로 스와이프
+                        Toast.makeText(RecordActivity.this, "↓", Toast.LENGTH_SHORT).show();
+                        clickDown();
+                    } else {
+                        // 위로 스와이프
+                        Toast.makeText(RecordActivity.this, "↑", Toast.LENGTH_SHORT).show();
+                        clickUp();
+                    }
+                }
+            }
+            return super.onFling(event1, event2, velocityX, velocityY);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent event) {
+            vibrate(1000);
+            if (!recording)
+                pressStartButton();
+            else
+                pressStopButton();
+        }
     }
 }

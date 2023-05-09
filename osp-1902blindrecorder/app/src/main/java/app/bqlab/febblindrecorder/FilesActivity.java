@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -170,6 +172,7 @@ public class FilesActivity extends AppCompatActivity {
         }
     }
 
+    //현재 화면에 6개까지만 보여짐 (그 이상은 스크롤 기능 만들기 귀찮아서 일단 보류)
     private void loadFiles() {
         if (new File(fileDir).list().length == 0) {
             startActivity(new Intent(this, MainActivity.class));
@@ -181,17 +184,27 @@ public class FilesActivity extends AppCompatActivity {
             });
             speakThread.start();
         } else {
-            //파일을 커스텀 레이아웃인 FileLayout으로 치환하여 뷰그룹에 추가(파일 리스트->레이아웃 그룹으로 변환 정도로 이해하면 쉽습니다)
             filesBody.removeAllViews();
             File dir = new File(fileDir);
             fileNames = dir.list();
             filesBodyLayouts = new ArrayList<>();
-            if (fileNames.length != 0) {
-                for (int i = 0; i < fileNames.length; i++) {
-                    FileLayout fileLayout = new FileLayout(this, String.valueOf(i + 1), fileNames[i]);
-                    filesBodyLayouts.add(fileLayout);
-                    filesBody.addView(fileLayout);
+
+            // 파일을 최근에 생성된 순서로 정렬
+            Arrays.sort(fileNames, new Comparator<String>() {
+                @Override
+                public int compare(String filename1, String filename2) {
+                    File file1 = new File(fileDir + File.separator + filename1);
+                    File file2 = new File(fileDir + File.separator + filename2);
+                    return Long.compare(file2.lastModified(), file1.lastModified());
                 }
+            });
+
+            int maxFilesToShow = Math.min(fileNames.length, 6); // 최대 6개 파일까지만 보여주기 위해 개수 제한
+
+            for (int i = 0; i < maxFilesToShow; i++) {
+                FileLayout fileLayout = new FileLayout(this, String.valueOf(i + 1), fileNames[i]);
+                filesBodyLayouts.add(fileLayout);
+                filesBody.addView(fileLayout);
             }
         }
     }

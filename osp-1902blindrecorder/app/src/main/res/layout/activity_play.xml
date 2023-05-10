@@ -8,21 +8,51 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:layout_margin="60dp"
+        android:layout_gravity="center"
+        android:background="@drawable/play_icon" />
+
     <LinearLayout
         android:id="@+id/play_body"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
         android:layout_marginBottom="200dp"
         android:background="@color/colorWhite"
-        android:gravity="center"
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/play_button"
+            android:id="@+id/play_body_play"
             style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="240dp"
-            android:layout_height="240dp"
-            android:background="@drawable/speaker_off" />
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/app_button"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="녹음파일 재생"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/play_body_text"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/app_button"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="녹음파일 텍스트로 보기"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>

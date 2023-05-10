@@ -12,25 +12,29 @@ import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.UtteranceProgressListener;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 public class PlayActivity extends AppCompatActivity {
 
+    //constants
+    final int PLAY_FILE = 0;
+    final int FILE_TO_TEXT = 1;
     //variables
-    int soundDisable;
+    int focus, soundDisable;
     boolean playing, speaking;
     String fileName, fileDir, filePath;
     //objects
@@ -42,12 +46,17 @@ public class PlayActivity extends AppCompatActivity {
     SoundPool mSoundPool;
     Thread speakThread;
     GestureDetector gestureDetector;
+    //layouts
+    LinearLayout playBody;
+    List<View> playBodyButtons;
+    Button playBodyPlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         init();
+        resetFocus();
         setupSoundPool();
     }
 
@@ -80,20 +89,36 @@ public class PlayActivity extends AppCompatActivity {
 
     private void init() {
         //initialize
+        playBody = findViewById(R.id.play_body);
+        playBodyButtons = new ArrayList<View>();
+        for (int i = 0; i < playBody.getChildCount(); i++)
+            playBodyButtons.add(playBody.getChildAt(i));
+        playBodyPlay = (Button) findViewById(R.id.play_body_play);
         filePath = getIntent().getStringExtra("filePath");
         fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
         fileName = filePath.replace(fileDir + File.separator, "");
         mFile = new File(fileDir, fileName);
+
         //제스처
         gestureDetector = new GestureDetector(this, new PlayActivity.MyGestureListener());
     }
 
     private void clickUp() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
+        shutupTTS();
+        focus--;
+        if (focus < 0)
+            focus = 0;
+        speakFocus();
+        resetFocus();
     }
 
     private void clickDown() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
+        shutupTTS();
+        focus++;
+        if (focus > playBodyButtons.size() - 1)
+            focus = playBodyButtons.size() - 1;
+        speakFocus();
+        resetFocus();
     }
 
     private void clickLeft() {
@@ -112,15 +137,33 @@ public class PlayActivity extends AppCompatActivity {
         mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
     }
 
-    private void pressPlayButton() {
-        shutupTTS();
-        if (playing) {
-            vibrate(1000);
-            stopPlaying();
+    private void longPressOption() {
+        switch (focus) {
+            case PLAY_FILE:
+                shutupTTS();
+                if (playing) {
+                    vibrate(1000);
+                    stopPlaying();
+                } else {
+                    vibrate(500);
+                    startPlaying();
+                }
+                break;
+            case FILE_TO_TEXT:
+                Toast.makeText(this, "go go", Toast.LENGTH_SHORT).show();
+                break;
         }
-        else {
-            vibrate(500);
-            startPlaying();
+    }
+
+    private void resetFocus() {
+        for (int i = 0; i < playBodyButtons.size(); i++) {
+            if (i != focus) {
+                //포커스가 없는 버튼 처리
+                playBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button));
+            } else {
+                //포커스를 가진 버튼 처리
+                playBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button_focussed));
+            }
         }
     }
 
@@ -175,52 +218,63 @@ public class PlayActivity extends AppCompatActivity {
             @SuppressLint("SimpleDateFormat")
             @Override
             public void run() {
-                    final String speak = "현재 폴더는 " + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
+                final String speak = "현재 폴더는 " + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 //STT로 검색하여 이 화면에 도달하였을 경우 추가적으로 음성 출력
-                    if (getIntent().getStringExtra("searchResult") != null) {
-                        speakThread = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                speak(speak);
-                                try {
-                                    Thread.sleep(3000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                speak("파일을 찾았습니다. 곧 재생됩니다.");
-                                try {
-                                    Thread.sleep(3500);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                        speakThread.start();
-                    }
-                    //파일 정보 음성으로 출력
+                if (getIntent().getStringExtra("searchResult") != null) {
                     speakThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            speak(fileName.replace(".mp4", "") + new SimpleDateFormat(" yyyy년 MM월 dd일").format(mFile.lastModified()));
+                            speak(speak);
                             try {
                                 Thread.sleep(3000);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        startPlaying();
-                                    }
-                                });
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            speak("파일을 찾았습니다. 곧 재생됩니다.");
+                            try {
+                                Thread.sleep(3500);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
                     });
                     speakThread.start();
+                }
+                //파일 정보 음성으로 출력
+                speakThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        speak(fileName.replace(".mp4", "") + new SimpleDateFormat(" yyyy년 MM월 dd일").format(mFile.lastModified()));
+                        try {
+                            Thread.sleep(3000);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startPlaying();
+                                }
+                            });
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                speakThread.start();
+            }
+        });
+        speakThread.start();
+    }
+
+    private void speakFocus() {
+        final Button button = (Button) playBodyButtons.get(focus);
+        speakThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                speak(button.getText().toString());
             }
         });
         speakThread.start();
@@ -274,7 +328,7 @@ public class PlayActivity extends AppCompatActivity {
                     }
                 }
             }).start();
-            findViewById(R.id.play_button).setBackground(getDrawable(R.drawable.speaker_on));
+            playBodyPlay.setText("녹음파일 중지");
         } else
             Toast.makeText(this, "이미 파일을 재생하는 중입니다.", Toast.LENGTH_LONG).show();
     }
@@ -289,9 +343,8 @@ public class PlayActivity extends AppCompatActivity {
             mPlayer = null;
         }
         playing = false;
-        findViewById(R.id.play_button).setBackground(getDrawable(R.drawable.speaker_off));
+        playBodyPlay.setText("녹음파일 재생");
     }
-
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final int SWIPE_THRESHOLD = 100;
@@ -332,7 +385,7 @@ public class PlayActivity extends AppCompatActivity {
 
         @Override
         public void onLongPress(MotionEvent event) {
-            pressPlayButton();
+            longPressOption();
         }
     }
 }

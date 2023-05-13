@@ -31,6 +31,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="de281326-6dd3-4eab-9c99-bc14b0cf6366" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/TextActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_text.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.10.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.10.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.10.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10.1/javaCompile/classAnalysis.bin" afterDir="false" />
@@ -38,10 +40,11 @@
       <change beforePath="$PROJECT_DIR$/.gradle/4.10.1/taskHistory/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10.1/taskHistory/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.10.1/taskHistory/taskHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10.1/taskHistory/taskHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/MainActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/PlayActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/PlayActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_play.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_play.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,6 +90,8 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="Galaxy_same_model" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2023-05-13T06:50:00.920Z" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
@@ -95,20 +100,24 @@
     <property name="android-custom-viewC:/Users/user/Documents/GitHub/capstone1/osp-1902blindrecorder/app/src/main/java/app/bqlab/febblindrecorder/JoystickView.java_SELECTED" value="JoystickView" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/res/drawable" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/src/main/res/layout" />
     <property name="multi-representation-previewC:/Users/user/AppData/Local/Android/Sdk/sources/android-28/android/view/View.java_selected" value="Custom views" />
     <property name="multi-representation-previewC:/Users/user/Documents/GitHub/capstone1/osp-1902blindrecorder/app/src/main/java/app/bqlab/febblindrecorder/JoystickView.java_selected" value="Custom views" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\user\Documents\GitHub\capstone1\osp-1902blindrecorder\app\src\main\res\drawable" />
-      <recent name="C:\Users\user\Documents\GitHub\capstone1\osp-1902blindrecorder\app\src\main\res\drawable-v24" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\user\Documents\GitHub\capstone1\osp-1902blindrecorder\app\src\main\res\layout" />
       <recent name="C:\Users\user\Documents\GitHub\capstone1\osp-1902blindrecorder\app\src\main\res\drawable" />
       <recent name="C:\Users\user\Documents\GitHub\capstone1\osp-1902blindrecorder\app\src\main\res\drawable-v24" />
       <recent name="C:\Users\dkwhs\Downloads\osp-1902blindrecorder\app\src\main\res\drawable-v24" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="app.bqlab.febblindrecorder" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\user\Documents\GitHub\capstone1\osp-1902blindrecorder\app\src\main\res\drawable" />
+      <recent name="C:\Users\user\Documents\GitHub\capstone1\osp-1902blindrecorder\app\src\main\res\drawable-v24" />
     </key>
   </component>
   <component name="RunManager">
@@ -216,10 +225,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="499" y="159" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1536.824@0.0.1536.824" timestamp="1683692515052" />
-    <state x="93" y="93" width="1350" height="638" key="AVDManager" timestamp="1683699441041">
+    <state x="93" y="93" width="1350" height="638" key="AVDManager" timestamp="1683961037097">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="93" y="93" width="1350" height="638" key="AVDManager/0.0.1536.824@0.0.1536.824" timestamp="1683699441041" />
+    <state x="93" y="93" width="1350" height="638" key="AVDManager/0.0.1536.824@0.0.1536.824" timestamp="1683961037097" />
     <state x="349" y="167" key="AndroidCreateResourceFileDialog" timestamp="1683522592387">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -232,22 +241,22 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1683698127019" />
-    <state width="1491" height="208" key="GridCell.Tab.0.bottom" timestamp="1683699642278">
+    <state width="1491" height="208" key="GridCell.Tab.0.bottom" timestamp="1683961703978">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="208" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1683699642278" />
-    <state width="1491" height="208" key="GridCell.Tab.0.center" timestamp="1683699642278">
+    <state width="1491" height="208" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1683961703978" />
+    <state width="1491" height="208" key="GridCell.Tab.0.center" timestamp="1683961703978">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="208" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1683699642278" />
-    <state width="1491" height="208" key="GridCell.Tab.0.left" timestamp="1683699642278">
+    <state width="1491" height="208" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1683961703978" />
+    <state width="1491" height="208" key="GridCell.Tab.0.left" timestamp="1683961703977">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="208" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1683699642278" />
-    <state width="1491" height="208" key="GridCell.Tab.0.right" timestamp="1683699642278">
+    <state width="1491" height="208" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1683961703977" />
+    <state width="1491" height="208" key="GridCell.Tab.0.right" timestamp="1683961703978">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="208" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1683699642278" />
+    <state width="1491" height="208" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1683961703978" />
     <state x="277" y="57" key="SettingsEditor" timestamp="1683438599021">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

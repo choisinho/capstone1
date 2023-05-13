@@ -150,7 +150,7 @@ public class PlayActivity extends AppCompatActivity {
                 }
                 break;
             case FILE_TO_TEXT:
-                Toast.makeText(this, "go go", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, TextActivity.class));
                 break;
         }
     }

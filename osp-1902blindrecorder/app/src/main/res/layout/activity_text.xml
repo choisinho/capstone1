@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/text"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhiteDark"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ProgressBar
+        android:id="@+id/text_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/text_body"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="200dp"
+        android:background="@color/colorWhite"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/text_body_viewer"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/app_button"
+            android:clickable="false"
+            android:focusable="false"
+            android:gravity="start"
+            android:padding="20dp"
+            android:text="안녕하세요. 이 글은 테스트 목적으로 작성되었습니다. 나는 5월 19일 오후 2시에 예식장을 간다. 신랑의 전화번호는 01012345678이고 장소는 충청북도 충주시 대학로 50이다. 최대 120글자까지 지원."
+            android:textColor="@color/colorYellow"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/text_body_alarm"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/app_button"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="일정 불러오기"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/text_body_phone"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/app_button"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="전화번호 불러오기"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/text_body_map"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/app_button"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="장소 불러오기"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/text_body_back"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/app_button"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="이전으로 돌아가기"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</RelativeLayout>

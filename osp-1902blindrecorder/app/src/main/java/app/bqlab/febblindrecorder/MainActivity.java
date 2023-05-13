@@ -178,14 +178,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void clickVToggle() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-    }
-
-    private void clickXToggle() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-    }
-
     private boolean isDirectoryAllRight() {
         fileDir = Environment.getExternalStorageDirectory() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
         mFile = new File(fileDir);

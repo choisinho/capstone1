@@ -23,7 +23,9 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.coremedia.iso.boxes.Container;
@@ -61,9 +63,19 @@ public class RecordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
-        init();
-        setupSoundPool();
+        final ProgressBar loading = findViewById(R.id.record_loading);
+        ViewTreeObserver viewTreeObserver = findViewById(android.R.id.content).getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                loading.setVisibility(View.GONE);
+                init();
+                setupSoundPool();
+                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
     }
+
 
     @Override
     protected void onResume() {

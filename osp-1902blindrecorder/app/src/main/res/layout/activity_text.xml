@@ -7,14 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorWhiteDark"
     android:orientation="vertical"
-    tools:context=".MainActivity">
-
-    <ProgressBar
-        android:id="@+id/text_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="visible" />
+    tools:context=".TextActivity">
 
     <LinearLayout
         android:id="@+id/text_body"
@@ -87,20 +80,12 @@
             android:textColor="@color/colorWhite"
             android:textSize="16sp"
             android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/text_body_back"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_marginHorizontal="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/app_button"
-            android:clickable="false"
-            android:focusable="false"
-            android:text="이전으로 돌아가기"
-            android:textColor="@color/colorWhite"
-            android:textSize="16sp"
-            android:textStyle="bold" />
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/text_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="visible" />
 </RelativeLayout>

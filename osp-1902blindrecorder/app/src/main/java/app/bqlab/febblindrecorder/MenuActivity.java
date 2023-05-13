@@ -19,8 +19,10 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -55,9 +57,18 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        init();
-        resetFocus();
-        setupSoundPool();
+        final ProgressBar loading = findViewById(R.id.menu_loading);
+        ViewTreeObserver viewTreeObserver = findViewById(android.R.id.content).getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                loading.setVisibility(View.GONE);
+                init();
+                resetFocus();
+                setupSoundPool();
+                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
     }
 
     @Override

@@ -135,6 +135,7 @@ public class FilesActivity extends AppCompatActivity {
             i.putExtra("filePath", file.getPath());
             i.putExtra("flag", "list");
             startActivity(i);
+            finish();
         } else {
             loadFiles();
         }
@@ -194,6 +195,7 @@ public class FilesActivity extends AppCompatActivity {
                 }
             });
             speakThread.start();
+            finish();
         } else {
             filesBody.removeAllViews();
             File dir = new File(fileDir);

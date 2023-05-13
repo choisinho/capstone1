@@ -460,6 +460,7 @@ public class MenuActivity extends AppCompatActivity {
                         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREA);
                         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "파일명을 말하세요.");
                         startActivityForResult(intent, SPEECH_TO_TEXT);
+                        finish();
                     }
                 });
             }

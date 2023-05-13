@@ -178,6 +178,7 @@ public class FoldersActivity extends AppCompatActivity {
                 Intent i = new Intent(this, MenuActivity.class);
                 i.putExtra("filePath", getIntent().getStringExtra("filePath") + "@folders");
                 startActivity(i);
+                finish();
             }
         } else {
             loadFolders();
@@ -199,6 +200,7 @@ public class FoldersActivity extends AppCompatActivity {
                 Intent i = new Intent(this, MenuActivity.class);
                 i.putExtra("filePath", getIntent().getStringExtra("filePath") + "@folders");
                 startActivity(i);
+                finish();
             }
         } else {
             loadFolders();
@@ -362,6 +364,7 @@ public class FoldersActivity extends AppCompatActivity {
                     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREA);
                     intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "변경 또는 삭제를 말씀하세요.");
                     startActivityForResult(intent, SPEECH_TO_TEXT);
+                    finish();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

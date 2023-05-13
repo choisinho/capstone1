@@ -101,6 +101,7 @@ public class SearchActivity extends AppCompatActivity {
                                 i.putExtra("flag", "name");
                                 i.putExtra("searchResult", "파일찾기성공"); //PlayActivity로 이동할 때 성공 여부를 전달함
                                 startActivity(i);
+                                finish();
                             } else {
                                 speakThread = new Thread(new Runnable() {
                                     @Override
@@ -164,8 +165,10 @@ public class SearchActivity extends AppCompatActivity {
                 requestSpeech();
                 break;
             case SEARCY_BY_LIST:
-                if (new File(fileDir).list().length != 0)
+                if (new File(fileDir).list().length != 0) {
                     startActivity(new Intent(SearchActivity.this, FilesActivity.class));
+                    finish();
+                }
                 else {
                     speakThread = new Thread(new Runnable() {
                         @Override
@@ -281,6 +284,7 @@ public class SearchActivity extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREA);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "파일명을 말하세요.");
         startActivityForResult(intent, SPEECH_TO_TEXT);
+        finish();
     }
 
 

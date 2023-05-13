@@ -45,24 +45,16 @@
       <change beforePath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/MainActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/MenuActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/MenuActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/PlayActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/PlayActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/RecordActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/RecordActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/SearchActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/SearchActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_files.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_files.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_folder.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_folder.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_folders.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_folders.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/TextActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/app/bqlab/febblindrecorder/TextActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_menu.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_menu.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_play.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_play.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_record.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_record.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_search.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_search.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_text.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_text.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[Galaxy_same_model]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[5200217bfae0c42d]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -101,8 +93,8 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="Galaxy_same_model" />
-    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2023-05-13T06:50:00.920Z" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="5200217bfae0c42d" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2023-05-13T10:41:52.661Z" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
@@ -253,22 +245,22 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1683698127019" />
-    <state width="1491" height="208" key="GridCell.Tab.0.bottom" timestamp="1683964061358">
+    <state width="1491" height="208" key="GridCell.Tab.0.bottom" timestamp="1683975859107">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="208" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1683964061358" />
-    <state width="1491" height="208" key="GridCell.Tab.0.center" timestamp="1683964061358">
+    <state width="1491" height="208" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1683975859107" />
+    <state width="1491" height="208" key="GridCell.Tab.0.center" timestamp="1683975859106">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="208" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1683964061358" />
-    <state width="1491" height="208" key="GridCell.Tab.0.left" timestamp="1683964061358">
+    <state width="1491" height="208" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1683975859106" />
+    <state width="1491" height="208" key="GridCell.Tab.0.left" timestamp="1683975859106">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="208" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1683964061358" />
-    <state width="1491" height="208" key="GridCell.Tab.0.right" timestamp="1683964061358">
+    <state width="1491" height="208" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1683975859106" />
+    <state width="1491" height="208" key="GridCell.Tab.0.right" timestamp="1683975859107">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="208" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1683964061358" />
+    <state width="1491" height="208" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1683975859107" />
     <state x="277" y="57" key="SettingsEditor" timestamp="1683438599021">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

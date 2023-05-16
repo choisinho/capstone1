@@ -70,6 +70,7 @@ public class RecordActivity extends AppCompatActivity {
             public void onGlobalLayout() {
                 loading.setVisibility(View.GONE);
                 init();
+                checkResumedFile();
                 setupSoundPool();
                 findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -81,7 +82,6 @@ public class RecordActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         setupTTS();
-        checkResumedFile();
         speakFirst();
     }
 

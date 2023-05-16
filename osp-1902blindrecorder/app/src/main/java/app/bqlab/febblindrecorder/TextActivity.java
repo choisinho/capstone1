@@ -39,7 +39,7 @@ public class TextActivity extends AppCompatActivity {
     //variables
     int focus, soundDisable;
     boolean playing, speaking;
-    String fileName, fileDir, filePath, flag;
+    String fileName, fileDir, filePath;
     //objects
     File mFile;
     TextToSpeech mTTS;
@@ -103,13 +103,7 @@ public class TextActivity extends AppCompatActivity {
         textBodyButtons = new ArrayList<View>();
         for (int i = 0; i < textBody.getChildCount(); i++)
             textBodyButtons.add(textBody.getChildAt(i));
-        //파일관리
-        flag = getIntent().getStringExtra("flag");
-        filePath = getIntent().getStringExtra("filePath");
-        fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
-        fileName = filePath.replace(fileDir + File.separator, "");
-        mFile = new File(fileDir, fileName);
-        Log.d("filePath", filePath);
+
         //제스처
         gestureDetector = new GestureDetector(this, new TextActivity.MyGestureListener());
     }
@@ -134,15 +128,7 @@ public class TextActivity extends AppCompatActivity {
 
     private void clickLeft() {
         shutupTTS();
-        if (new File(fileDir, fileName).exists()) {
-            File file = new File(fileDir, fileName);
-            Intent i = new Intent(this, PlayActivity.class);
-            i.putExtra("filePath", file.getPath());
-            i.putExtra("flag", flag);
-            startActivity(i);
-            finish();
-        } else
-            speak("잠시후 다시 시도해주세요.");
+        //이전으로 돌아갈때 인텐트에 파일 데이터 담아서 보내야 함
     }
 
     private void clickRight() {

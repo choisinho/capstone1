@@ -38,7 +38,7 @@ public class PlayActivity extends AppCompatActivity {
     //variables
     int focus, soundDisable;
     boolean playing, speaking;
-    String fileName, fileDir, filePath, flag;
+    String fileName, fileDir, filePath;
     //objects
     File mFile;
     TextToSpeech mTTS;
@@ -105,9 +105,6 @@ public class PlayActivity extends AppCompatActivity {
         for (int i = 0; i < playBody.getChildCount(); i++)
             playBodyButtons.add(playBody.getChildAt(i));
         playBodyPlay = (Button) findViewById(R.id.play_body_play);
-
-        //파일
-        flag = getIntent().getStringExtra("flag");
         filePath = getIntent().getStringExtra("filePath");
         fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
         fileName = filePath.replace(fileDir + File.separator, "");
@@ -137,6 +134,7 @@ public class PlayActivity extends AppCompatActivity {
 
     private void clickLeft() {
         shutupTTS();
+        String flag = getIntent().getStringExtra("flag");
         if (flag.equals("list")) {
             startActivity(new Intent(PlayActivity.this, FilesActivity.class));
             finish();
@@ -163,14 +161,7 @@ public class PlayActivity extends AppCompatActivity {
                 }
                 break;
             case FILE_TO_TEXT:
-                if (new File(fileDir, fileName).exists()) {
-                    File file = new File(fileDir, fileName);
-                    Intent i = new Intent(this, TextActivity.class);
-                    i.putExtra("filePath", file.getPath());
-                    i.putExtra("flag", flag);
-                    startActivity(i);
-                } else
-                    speak("잠시후 다시 시도해주세요.");
+                startActivity(new Intent(this, TextActivity.class));
                 break;
         }
     }
@@ -329,7 +320,15 @@ public class PlayActivity extends AppCompatActivity {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 stopPlaying();
-                                speak("재생이 끝났습니다.");
+                                String flag = getIntent().getStringExtra("flag");
+                                if (flag.equals("list")) {
+                                    startActivity(new Intent(PlayActivity.this, FilesActivity.class));
+                                    finish();
+                                } else if (flag.equals("name")) {
+                                    startActivity(new Intent(PlayActivity.this, SearchActivity.class));
+                                    finish();
+                                }
+                                finish();
                             }
                         });
                         mPlayer.setDataSource(filePath);

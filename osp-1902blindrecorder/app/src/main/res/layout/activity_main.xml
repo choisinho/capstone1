@@ -71,16 +71,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:textSize="16sp"
-        android:textColor="@color/colorPrimary"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:text="ViProject All rights reserved."/>
-
     <ProgressBar
         android:id="@+id/main_loading"
         android:layout_width="wrap_content"

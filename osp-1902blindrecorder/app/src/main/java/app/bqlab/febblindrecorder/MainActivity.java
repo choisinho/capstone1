@@ -168,20 +168,17 @@ public class MainActivity extends AppCompatActivity {
                 if (isDirectoryAllRight()) {
                     startActivity(new Intent(MainActivity.this, RecordActivity.class));
                     stopPlaying();
-                    finish();
                 }
                 break;
             case FOCUS_FOLDER_MANAGE:
                 isDirectoryAllRight();
                 startActivity(new Intent(MainActivity.this, FolderActivity.class));
                 stopPlaying();
-                finish();
                 break;
             case FOCUS_SEARCH_MEMO:
                 if (isDirectoryAllRight()) {
                     startActivity(new Intent(MainActivity.this, SearchActivity.class));
                     stopPlaying();
-                    finish();
                 }
                 break;
             case FOCUS_INSTANT_PLAY:

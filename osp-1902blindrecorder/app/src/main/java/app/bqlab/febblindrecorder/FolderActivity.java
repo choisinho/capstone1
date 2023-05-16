@@ -171,10 +171,8 @@ public class FolderActivity extends AppCompatActivity {
                     requestSpeech();
                 break;
             case FOLDER_CHANGE:
-                if (new File(fileDir).list().length != 0) {
+                if (new File(fileDir).list().length != 0)
                     startActivity(new Intent(this, FoldersActivity.class));
-                    finish();
-                }
                 else {
                     speakThread = new Thread(new Runnable() {
                         @Override
@@ -288,7 +286,6 @@ public class FolderActivity extends AppCompatActivity {
                     intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREA);
                     intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "생성할 폴더명을 말씀해주세요");
                     startActivityForResult(intent, SPEECH_TO_TEXT);
-                    finish();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -31,12 +31,13 @@ import java.util.Locale;
 public class MemoActivity extends AppCompatActivity {
 
     //constants
-    final int INPUT_MEMO = 0;       //파일 이름으로 찾기
-    final int SAVE_MEMO = 1;       //파일 목록
+    final int MEMO_VIEWER = 0;       //파일 이름으로 찾기
+    final int INPUT_MEMO = 1;       //파일 이름으로 찾기
+    final int SAVE_MEMO = 2;       //파일 목록
     final int SPEECH_TO_TEXT = 1000;
     //variables
     int focus, soundMenuEnd, soundDisable;
-    boolean cannotFind;
+    boolean cannotFind = false, isFirst = true;
     String fileDir;
     ArrayList<String> speech;
     //objects
@@ -47,6 +48,7 @@ public class MemoActivity extends AppCompatActivity {
     //layouts
     LinearLayout memoBody;
     List<View> memoBodyButtons;
+    Button memoBodyViewer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,21 +92,39 @@ public class MemoActivity extends AppCompatActivity {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == SPEECH_TO_TEXT) {
                 if (data != null) {
+                    //STT 음성 입력 불러옴
                     speech = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     switch (focus) {
                         case INPUT_MEMO:
-                            shutupTTS();
-                            //메모 입력하는 코드
+                            inputMemo(speech.get(0));
+                            break;
+                        case SAVE_MEMO:
+                            //텍스트 파일로 저장
                             break;
                     }
+                }
+            }
+        } else {
+            //사용자가 아무 말도 하지 않은 경우
+            if (requestCode == SPEECH_TO_TEXT) {
+                switch (focus) {
+                    case INPUT_MEMO:
+                        inputMemo("아무말도안함");
+                        vibrate(500);
+                        break;
+                    case SAVE_MEMO:
+                        //파일 이름을 묻는 부분
+                        break;
                 }
             }
         }
     }
 
+
     private void init() {
         //initialize
         memoBody = findViewById(R.id.memo_body);
+        memoBodyViewer = findViewById(R.id.memo_body_viewer);
         memoBodyButtons = new ArrayList<View>();
         fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
         Log.d("save folder", fileDir);
@@ -144,13 +164,19 @@ public class MemoActivity extends AppCompatActivity {
     }
 
     private void clickRight() {
+        Log.d("focus", String.valueOf(focus));
         switch (focus) {
+            case MEMO_VIEWER:
+                shutupTTS();
+                speak(memoBodyViewer.getText().toString());
+                break;
             case INPUT_MEMO:
                 shutupTTS();
-                requestSpeech();
+                requestSpeech("추가할 내용을 말하세요.");
                 break;
             case SAVE_MEMO:
-                //메모를 텍스트 파일로 저장
+                shutupTTS();
+                requestSpeech("저장할 이름을 말하세요.");
                 break;
         }
     }
@@ -261,12 +287,28 @@ public class MemoActivity extends AppCompatActivity {
         }
     }
 
-    private void requestSpeech() {
+    private void requestSpeech(String msg) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREA);
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "파일명을 말하세요.");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, msg);
         startActivityForResult(intent, SPEECH_TO_TEXT);
+    }
+
+    private void inputMemo(String newString) {
+        String oldString = memoBodyViewer.getText().toString();
+        if (isStringLengthOver())
+            speak("더이상 내용을 추가할 수 없습니다.");
+        else if (isFirst && !newString.equals(null)) {
+            memoBodyViewer.setText(newString);
+            isFirst = false;
+        }  else
+            memoBodyViewer.setText(oldString + " " + newString);
+    }
+
+    private boolean isStringLengthOver() {
+        String s = memoBodyViewer.getText().toString();
+        return s.length() >= 120;
     }
 
 

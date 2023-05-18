@@ -2,6 +2,7 @@ package app.bqlab.febblindrecorder;
 
 import android.Manifest;
 import android.app.job.JobScheduler;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
@@ -10,6 +11,8 @@ import android.media.MediaRecorder;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -141,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
         }
         speakFocus();
         resetFocus();
-        stopRecentPlaying();
     }
 
     private void clickDown() {
@@ -153,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
         }
         speakFocus();
         resetFocus();
-        stopRecentPlaying();
     }
 
     private void clickLeft() {
@@ -167,24 +168,20 @@ public class MainActivity extends AppCompatActivity {
             case FOCUS_VOICE_MEMO:
                 if (isDirectoryAllRight()) {
                     startActivity(new Intent(MainActivity.this, RecordActivity.class));
-                    stopPlaying();
                 }
                 break;
             case FOCUS_TEXT_MEMO:
                 if(isDirectoryAllRight()) {
                     startActivity(new Intent(MainActivity.this, MemoActivity.class));
-                    stopPlaying();
                 }
                 break;
             case FOCUS_FOLDER_MANAGE:
                 isDirectoryAllRight();
                 startActivity(new Intent(MainActivity.this, FolderActivity.class));
-                stopPlaying();
                 break;
             case FOCUS_SEARCH_MEMO:
                 if (isDirectoryAllRight()) {
                     startActivity(new Intent(MainActivity.this, SearchActivity.class));
-                    stopPlaying();
                 }
                 break;
         }
@@ -304,103 +301,12 @@ public class MainActivity extends AppCompatActivity {
         speakThread.start();
     }
 
-    private void playRecentFile() {
-        loadFiles(); //파일 리스트 동기화
-        final String latestFilePath = getSharedPreferences("setting", MODE_PRIVATE).getString("LATEST_RECORD_FILE", "");
-        final File latestFile = new File(latestFilePath);
-        playing = false;
-        if (Objects.equals(latestFilePath, "")) {
-            speakThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    speak("최근 저장한 파일을 찾을 수 없습니다.");
-                }
-            });
-            speakThread.start();
-        } else {
-            //최근파일 재생
-            speakThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        speak("최근저장메모");
-                        Thread.sleep(1000);
-                        speak(latestFile.getName());
-                        Thread.sleep(3000);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!playing) {
-                                mRecorder = new MediaRecorder();
-                                mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                                mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-                                mRecorder.setOutputFile(latestFilePath);
-                                mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-                                playing = true;
-                                Log.d("playing", "shutupTTS: " + String.valueOf(playing));
-                                try {
-                                    mPlayer = new MediaPlayer();
-                                    mPlayer.setDataSource(latestFilePath);
-                                    mPlayer.prepare();
-                                    mPlayer.start();
-                                    mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                        @Override
-                                        public void onCompletion(MediaPlayer mp) {
-                                            playing = false;
-                                            Log.d("playing", "shutupTTS: " + String.valueOf(playing));
-                                            setupTTS();
-                                            speakFocus();
-                                        }
-                                    });
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-            speakThread.start();
-        }
-    }
-
-    private void stopRecentPlaying() {
-        //최근 파일 재생 중지
+    private void vibrate(long m) {
+        Log.d("vibrate", String.valueOf(m));
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         try {
-            if (mPlayer.isPlaying()) {
-                mPlayer.stop();
-                mPlayer.release();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadFiles() {
-        //디렉토리의 파일을 파일 리스트로 불러옴
-        filePathes = new ArrayList<>();
-        String[] names = mFile.list();
-        for (String name : names) {
-            filePathes.add(Environment.getExternalStorageDirectory() + File.separator + "음성메모장" + File.separator + name);
-        }
-    }
-
-    private void stopPlaying() {
-        //파일 재생 중지
-        if (mRecorder != null) {
-            mRecorder.release();
-            mRecorder = null;
-        }
-        if (mPlayer != null) {
-            try {
-                mPlayer.stop();
-                mPlayer = null;
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
+            vibrator.vibrate(VibrationEffect.createOneShot(m, VibrationEffect.DEFAULT_AMPLITUDE));
+        } catch (Exception ignored) {
         }
     }
 
@@ -457,6 +363,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             return super.onFling(event1, event2, velocityX, velocityY);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent event) {
+            vibrate(1000);
+            clickRight();
         }
     }
 }

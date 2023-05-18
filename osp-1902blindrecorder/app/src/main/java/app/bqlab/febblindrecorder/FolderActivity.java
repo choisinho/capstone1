@@ -1,11 +1,14 @@
 package app.bqlab.febblindrecorder;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
@@ -273,6 +276,15 @@ public class FolderActivity extends AppCompatActivity {
         speakThread.start();
     }
 
+    private void vibrate(long m) {
+        Log.d("vibrate", String.valueOf(m));
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        try {
+            vibrator.vibrate(VibrationEffect.createOneShot(m, VibrationEffect.DEFAULT_AMPLITUDE));
+        } catch (Exception ignored) {
+        }
+    }
+
     private void requestSpeech() {
         shutupTTS();
         speakThread = new Thread(new Runnable() {
@@ -378,6 +390,12 @@ public class FolderActivity extends AppCompatActivity {
                 }
             }
             return super.onFling(event1, event2, velocityX, velocityY);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent event) {
+            vibrate(1000);
+            clickRight();
         }
     }
 }

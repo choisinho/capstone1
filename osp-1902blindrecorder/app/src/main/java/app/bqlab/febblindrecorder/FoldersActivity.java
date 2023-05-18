@@ -68,7 +68,6 @@ public class FoldersActivity extends AppCompatActivity {
                 init();
                 loadFolders();
                 resetFocus();
-                setupSoundPool();
                 findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -158,10 +157,6 @@ public class FoldersActivity extends AppCompatActivity {
         }
     }
 
-    private void clickRight() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-    }
-
     private void changeFolder() {
         shutupTTS();
         String folderName = folderNames[focus];
@@ -248,19 +243,6 @@ public class FoldersActivity extends AppCompatActivity {
                 foldersBodyLayouts.get(i).setColor(getDrawable(R.drawable.app_button_focussed));
             }
         }
-    }
-
-    private void setupSoundPool() {
-        AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build();
-        mSoundPool = new SoundPool.Builder()
-                .setMaxStreams(2)
-                .setAudioAttributes(audioAttributes)
-                .build();
-        soundMenuEnd = mSoundPool.load(this, R.raw.app_sound_menu_end, 0);
-        soundDisable = mSoundPool.load(this, R.raw.app_sound_disable, 0);
     }
 
     private void setupTTS() {
@@ -384,7 +366,7 @@ public class FoldersActivity extends AppCompatActivity {
                     if (diffX > 0) {
                         // 오른쪽 스와이프
                         Toast.makeText(FoldersActivity.this, "→", Toast.LENGTH_SHORT).show();
-                        clickRight();
+                        requestSpeech();
                     } else {
                         // 왼쪽 스와이프
                         Toast.makeText(FoldersActivity.this, "←", Toast.LENGTH_SHORT).show();

@@ -145,10 +145,6 @@ public class PlayActivity extends AppCompatActivity {
         }
     }
 
-    private void clickRight() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-    }
-
     private void longPressOption() {
         switch (focus) {
             case PLAY_FILE:
@@ -371,7 +367,7 @@ public class PlayActivity extends AppCompatActivity {
                     if (diffX > 0) {
                         // 오른쪽 스와이프
                         Toast.makeText(PlayActivity.this, "→", Toast.LENGTH_SHORT).show();
-                        clickRight();
+                        longPressOption();
                     } else {
                         // 왼쪽 스와이프
                         Toast.makeText(PlayActivity.this, "←", Toast.LENGTH_SHORT).show();

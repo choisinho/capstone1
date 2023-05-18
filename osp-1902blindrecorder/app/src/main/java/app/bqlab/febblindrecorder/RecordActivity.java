@@ -141,7 +141,11 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     private void clickRight() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
+        vibrate(1000);
+        if (!recording)
+            pressStartButton();
+        else
+            pressStopButton();
     }
 
     private void pressStartButton() {
@@ -429,10 +433,7 @@ public class RecordActivity extends AppCompatActivity {
         @Override
         public void onLongPress(MotionEvent event) {
             vibrate(1000);
-            if (!recording)
-                pressStartButton();
-            else
-                pressStopButton();
+            clickRight();
         }
     }
 }

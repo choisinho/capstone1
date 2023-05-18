@@ -259,8 +259,7 @@ public class MenuActivity extends AppCompatActivity {
             i.putExtra("filePath", filePath);
             startActivity(i);
             finish();
-        } else
-            mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
+        }
     }
 
     private void pressSettingButton() {

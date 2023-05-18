@@ -147,10 +147,6 @@ public class TextActivity extends AppCompatActivity {
     }
 
     private void clickRight() {
-        mSoundPool.play(soundDisable, 1, 1, 0, 0, 1);
-    }
-
-    private void longPressOption() {
         switch (focus) {
             case PLAY_FILE:
                 break;
@@ -293,7 +289,8 @@ public class TextActivity extends AppCompatActivity {
 
         @Override
         public void onLongPress(MotionEvent event) {
-            longPressOption();
+            vibrate(1000);
+            clickRight();
         }
     }
 }

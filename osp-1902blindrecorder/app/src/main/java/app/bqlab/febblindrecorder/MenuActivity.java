@@ -159,8 +159,8 @@ public class MenuActivity extends AppCompatActivity {
                         int last = 0;
                         //사용자가 정확한 발음으로 음성입력하지 않았을 경우 이름은 이름없음N과 같은 형태로 지정되도록 설정
                         for (File file : new File(fileDir).listFiles()) {
-                            if (file.getName().contains("이름없음")) {
-                                String s1 = file.getName().replace("이름없음", "");
+                            if (file.getName().contains("이름 없는 음성메모")) {
+                                String s1 = file.getName().replace("이름 없는 음성메모", "");
                                 String s2 = s1.replace(".mp4", "");
                                 int temp = Integer.parseInt(s2);
                                 if (last < temp)
@@ -168,7 +168,7 @@ public class MenuActivity extends AppCompatActivity {
                                 //가장 마지막 숫자를 검색
                             }
                         }
-                        String newName = "이름없음" + String.valueOf(last + 1); //가장 마지막 숫자보다 1 더 큰 숫자를 끝에 추가
+                        String newName = "이름 없는 음성메모" + String.valueOf(last + 1); //가장 마지막 숫자보다 1 더 큰 숫자를 끝에 추가
                         File file = new File(filePath);
                         if (file.exists()) {
                             File renamedFile = new File(fileDir, newName + ".mp4");

@@ -24,6 +24,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -96,10 +98,16 @@ public class MemoActivity extends AppCompatActivity {
                     speech = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     switch (focus) {
                         case INPUT_MEMO:
+                            vibrate(500);
                             inputMemo(speech.get(0));
                             break;
                         case SAVE_MEMO:
-                            //텍스트 파일로 저장
+                            boolean saved = saveMemo(speech.get(0));
+                            Log.d("saved", String.valueOf(saved));
+                            if (saved) {
+                                startActivity(new Intent(this, MainActivity.class));
+                                finish();
+                            }
                             break;
                     }
                 }
@@ -109,11 +117,15 @@ public class MemoActivity extends AppCompatActivity {
             if (requestCode == SPEECH_TO_TEXT) {
                 switch (focus) {
                     case INPUT_MEMO:
-                        inputMemo("아무말도안함");
                         vibrate(500);
                         break;
                     case SAVE_MEMO:
-                        //파일 이름을 묻는 부분
+                        boolean saved = saveMemo(null);
+                        Log.d("saved", String.valueOf(saved));
+                        if (saved) {
+                            startActivity(new Intent(this, MainActivity.class));
+                            finish();
+                        }
                         break;
                 }
             }
@@ -304,6 +316,45 @@ public class MemoActivity extends AppCompatActivity {
             isFirst = false;
         }  else
             memoBodyViewer.setText(oldString + " " + newString);
+    }
+
+    private boolean saveMemo(String fileName) {
+        String content = memoBodyViewer.getText().toString();
+
+        if (isFirst) {
+            speak("저장할 내용이 없습니다.");
+            return false;
+        }
+
+        int last = 0;
+        if (fileName == null) {
+            for (File f : new File(fileDir).listFiles()) {
+                if (f.getName().contains("이름 없는 텍스트 메모")) {
+                    String s1 = f.getName().replace("이름 없는 텍스트 메모", "");
+                    String s2 = s1.replace(".txt", "");
+                    int temp = Integer.parseInt(s2);
+                    if (last < temp)
+                        last = temp;
+                    //가장 마지막 숫자를 검색
+                }
+            }
+            fileName = "이름 없는 텍스트 메모" + String.valueOf(last + 1); //가장 마지막 숫자보다 1 더 큰 숫자를 끝에 추가
+        }
+
+        File file = new File(fileDir, fileName + ".txt");
+        try {
+            // FileWriter를 사용하여 텍스트 파일에 데이터를 씁니다.
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(content);
+            fileWriter.flush();
+            fileWriter.close();
+            Log.d("saved name", fileName);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            speak("파일 저장에 실패했습니다. 잠시후 다시 시도하세요.");
+            return false;
+        }
     }
 
     private boolean isStringLengthOver() {

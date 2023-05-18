@@ -38,10 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
     //constants
     final int FOCUS_VOICE_MEMO = 0;             //음성 메모
-    final int FOCUS_FOLDER_MANAGE = 1;          //파일 관리
-    final int FOCUS_SEARCH_MEMO = 2;            //메모 찾기
-    final int FOCUS_INSTANT_PLAY = 3;           //파일 바로 재생
-    final int FOCUS_APP_EXIT = 4;               //종료
+    final int FOCUS_TEXT_MEMO = 1;             //음성 메모
+    final int FOCUS_FOLDER_MANAGE = 2;          //파일 관리
+    final int FOCUS_SEARCH_MEMO = 3;            //메모 찾기
     //variables
     String fileDir;
     List<String> filePathes;
@@ -163,10 +162,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void clickRight() {
         shutupTTS();
+        Log.d("focus", String.valueOf(focus));
         switch (focus) {
             case FOCUS_VOICE_MEMO:
                 if (isDirectoryAllRight()) {
                     startActivity(new Intent(MainActivity.this, RecordActivity.class));
+                    stopPlaying();
+                }
+                break;
+            case FOCUS_TEXT_MEMO:
+                if(isDirectoryAllRight()) {
+                    startActivity(new Intent(MainActivity.this, MemoActivity.class));
                     stopPlaying();
                 }
                 break;
@@ -181,12 +187,6 @@ public class MainActivity extends AppCompatActivity {
                     stopPlaying();
                 }
                 break;
-            case FOCUS_INSTANT_PLAY:
-                if (isDirectoryAllRight())
-                    playRecentFile();
-                break;
-            case FOCUS_APP_EXIT:
-                finishAffinity();
         }
     }
 

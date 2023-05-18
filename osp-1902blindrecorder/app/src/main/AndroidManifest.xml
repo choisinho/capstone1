@@ -35,6 +35,7 @@
         <activity android:name=".FolderActivity" />
         <activity android:name=".FoldersActivity" />
         <activity android:name=".TextActivity" />
+        <activity android:name=".MemoActivity" />
     </application>
 
 </manifest>

@@ -129,14 +129,33 @@ public class FilesActivity extends AppCompatActivity {
     private void clickRight() {
         shutupTTS();
         String fileName = fileNames[focus];
-        if (new File(fileDir, fileName).exists()) {
-            File file = new File(fileDir, fileName);
-            Intent i = new Intent(FilesActivity.this, PlayActivity.class);
-            i.putExtra("filePath", file.getPath());
-            i.putExtra("flag", "list");
-            startActivity(i);
+        File file = new File(fileDir, fileName);
+
+        if (file.exists()) {
+            String fileExtension = getFileExtension(fileName);
+            Intent intent = null;
+            if (fileExtension.equalsIgnoreCase("mp4")) {
+                intent = new Intent(FilesActivity.this, PlayActivity.class);
+            } else if (fileExtension.equalsIgnoreCase("txt")) {
+                intent = new Intent(FilesActivity.this, TextActivity.class);
+            } else {
+                // 예외 처리: 지원되지 않는 파일 형식일 경우에 대한 처리
+                return;
+            }
+            intent.putExtra("filePath", file.getPath());
+            intent.putExtra("flag", "list");
+            startActivity(intent);
         } else {
             loadFiles();
+        }
+    }
+
+    private String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf(".");
+        if (dotIndex != -1 && dotIndex < fileName.length() - 1) {
+            return fileName.substring(dotIndex + 1);
+        } else {
+            return "";
         }
     }
 

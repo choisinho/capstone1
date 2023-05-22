@@ -24,7 +24,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +41,6 @@ public class TextActivity extends AppCompatActivity {
     final int FILE_TO_TEXT = 1;
     //variables
     int focus, soundDisable;
-    boolean playing, speaking;
     String fileName, fileDir, filePath, flag;
     //objects
     File mFile;
@@ -114,6 +116,26 @@ public class TextActivity extends AppCompatActivity {
 
         //제스처
         gestureDetector = new GestureDetector(this, new TextActivity.MyGestureListener());
+
+        //layout
+        if (isMp4File(filePath)) {
+            //mp4 to txt
+        } else if (isTxtFile(filePath)) {
+            String s = ""; // txt 파일의 내용을 저장할 변수
+            try {
+                File file = new File(filePath);
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    s += line + "\n";
+                }
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            textBodyViewer = findViewById(R.id.text_body_viewer);
+            textBodyViewer.setText(s);
+        }
     }
 
     private void clickUp() {
@@ -136,11 +158,16 @@ public class TextActivity extends AppCompatActivity {
 
     private void clickLeft() {
         shutupTTS();
-        if (new File(fileDir, fileName).exists()) {
+        if (isMp4File(filePath)) {
             File file = new File(fileDir, fileName);
             Intent i = new Intent(this, PlayActivity.class);
             i.putExtra("filePath", file.getPath());
             i.putExtra("flag", flag);
+            startActivity(i);
+        } else if(isTxtFile(filePath)) {
+            File file = new File(fileDir, fileName);
+            Intent i = new Intent(this, FilesActivity.class);
+            i.putExtra("filePath", file.getPath());
             startActivity(i);
         } else
             speak("잠시후 다시 시도해주세요.");
@@ -248,6 +275,25 @@ public class TextActivity extends AppCompatActivity {
             vibrator.vibrate(VibrationEffect.createOneShot(m, VibrationEffect.DEFAULT_AMPLITUDE));
         } catch (Exception ignored) {
         }
+    }
+
+    private boolean isMp4File(String filePath) {
+        String fileExtension = getFileExtension(filePath);
+        return fileExtension.equalsIgnoreCase("mp4");
+    }
+
+    private boolean isTxtFile(String filePath) {
+        String fileExtension = getFileExtension(filePath);
+        return fileExtension.equalsIgnoreCase("txt");
+    }
+
+    private String getFileExtension(String filePath) {
+        String fileExtension = "";
+        int dotIndex = filePath.lastIndexOf(".");
+        if (dotIndex != -1 && dotIndex < filePath.length() - 1) {
+            fileExtension = filePath.substring(dotIndex + 1);
+        }
+        return fileExtension;
     }
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {

@@ -158,19 +158,26 @@ public class TextActivity extends AppCompatActivity {
 
     private void clickLeft() {
         shutupTTS();
-        if (isMp4File(filePath)) {
-            File file = new File(fileDir, fileName);
-            Intent i = new Intent(this, PlayActivity.class);
-            i.putExtra("filePath", file.getPath());
-            i.putExtra("flag", flag);
-            startActivity(i);
-        } else if(isTxtFile(filePath)) {
-            File file = new File(fileDir, fileName);
-            Intent i = new Intent(this, FilesActivity.class);
-            i.putExtra("filePath", file.getPath());
-            startActivity(i);
-        } else
-            speak("잠시후 다시 시도해주세요.");
+        String flag = getIntent().getStringExtra("flag");
+        if (flag.equals("list")) {
+            if (isMp4File(filePath)) {
+                File file = new File(fileDir, fileName);
+                Intent i = new Intent(this, PlayActivity.class);
+                i.putExtra("filePath", file.getPath());
+                i.putExtra("flag", flag);
+                startActivity(i);
+            } else if(isTxtFile(filePath)) {
+                File file = new File(fileDir, fileName);
+                Intent i = new Intent(this, FilesActivity.class);
+                i.putExtra("filePath", file.getPath());
+                startActivity(i);
+            } else
+                speak("잠시후 다시 시도해주세요.");
+            finish();
+        } else if (flag.equals("name")) {
+            startActivity(new Intent(TextActivity.this, SearchActivity.class));
+            finish();
+        }
     }
 
     private void clickRight() {

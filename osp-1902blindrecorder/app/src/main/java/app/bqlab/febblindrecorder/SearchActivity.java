@@ -15,7 +15,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -28,13 +27,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class SearchActivity extends AppCompatActivity {
 
     //constants
     final int SEARCH_BY_NAME = 0;       //파일 이름으로 찾기
-    final int SEARCY_BY_LIST = 1;       //파일 목록
+    final int SEARCH_BY_LIST = 1;       //파일 목록
+    final int CHECK_EXPRESSION = 2;
     final int SPEECH_TO_TEXT = 1000;
     //variables
     int focus, soundMenuEnd, soundDisable;
@@ -96,13 +95,22 @@ public class SearchActivity extends AppCompatActivity {
                     switch (focus) {
                         case SEARCH_BY_NAME:
                             shutupTTS();
-                            String fileName = speech.get(0) + ".mp4";
-                            File file = new File(fileDir, fileName);
-                            if (file.exists()) {
+                            String fileName = speech.get(0);
+                            File mp4File = new File(fileDir, fileName + ".mp4");
+                            File txtFile = new File(fileDir, fileName + ".txt");
+                            if (mp4File.exists() && txtFile.exists()) {
+                                requestSpeech("음성 또는 텍스트 중 하나를 말씀하세요.", CHECK_EXPRESSION);
+                            } else if (mp4File.exists()) {
                                 Intent i = new Intent(this, PlayActivity.class);
-                                i.putExtra("filePath", file.getPath());
+                                i.putExtra("filePath", mp4File.getPath());
                                 i.putExtra("flag", "name");
                                 i.putExtra("searchResult", "파일찾기성공"); //PlayActivity로 이동할 때 성공 여부를 전달함
+                                startActivity(i);
+                            } else if (txtFile.exists()) {
+                                Intent i = new Intent(this, TextActivity.class);
+                                i.putExtra("filePath", txtFile.getPath());
+                                i.putExtra("flag", "name");
+                                i.putExtra("searchResult", "파일찾기성공"); //TextActivity로 이동할 때 성공 여부를 전달함
                                 startActivity(i);
                             } else {
                                 speakThread = new Thread(new Runnable() {
@@ -113,6 +121,30 @@ public class SearchActivity extends AppCompatActivity {
                                 });
                                 speakThread.start();
                             }
+                            break;
+                    }
+                }
+            } else if (requestCode == CHECK_EXPRESSION) {
+                if (data != null) {
+                    speech = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String fileName = speech.get(0);
+                    switch (fileName) {
+                        case "음성":
+                            shutupTTS();
+                            File mp4File = new File(fileDir, fileName + ".mp4");
+                            Intent mp4Intent = new Intent(this, PlayActivity.class);
+                            mp4Intent.putExtra("filePath", mp4File.getPath());
+                            mp4Intent.putExtra("flag", "name");
+                            mp4Intent.putExtra("searchResult", "파일찾기성공"); //PlayActivity로 이동할 때 성공 여부를 전달함
+                            startActivity(mp4Intent);
+                            break;
+                        case "텍스트":
+                            File txtFile = new File(fileDir, fileName + ".txt");
+                            Intent txtIntent = new Intent(this, TextActivity.class);
+                            txtIntent.putExtra("filePath", txtFile.getPath());
+                            txtIntent.putExtra("flag", "name");
+                            txtIntent.putExtra("searchResult", "파일찾기성공"); //TextActivity로 이동할 때 성공 여부를 전달함
+                            startActivity(txtIntent);
                             break;
                     }
                 }
@@ -164,9 +196,9 @@ public class SearchActivity extends AppCompatActivity {
         switch (focus) {
             case SEARCH_BY_NAME:
                 shutupTTS();
-                requestSpeech();
+                requestSpeech("파일이름을 말씀하세요.", SEARCH_BY_NAME);
                 break;
-            case SEARCY_BY_LIST:
+            case SEARCH_BY_LIST:
                 if (new File(fileDir).list().length != 0)
                     startActivity(new Intent(SearchActivity.this, FilesActivity.class));
                 else {
@@ -287,12 +319,12 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private void requestSpeech() {
+    private void requestSpeech(String content, int code) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREA);
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "파일명을 말하세요.");
-        startActivityForResult(intent, SPEECH_TO_TEXT);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, content);
+        startActivityForResult(intent, code);
     }
 
 

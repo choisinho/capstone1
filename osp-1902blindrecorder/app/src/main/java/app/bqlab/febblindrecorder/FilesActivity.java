@@ -2,6 +2,7 @@ package app.bqlab.febblindrecorder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -350,11 +353,27 @@ public class FilesActivity extends AppCompatActivity {
                 if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffX > 0) {
                         // 오른쪽 스와이프
-                        Toast.makeText(FilesActivity.this, "→", Toast.LENGTH_SHORT).show();
+                        Toast toast = Toast.makeText(FilesActivity.this, "→", Toast.LENGTH_SHORT);
+                        TextView toastTextView = toast.getView().findViewById(android.R.id.message);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toastTextView.setHeight(300);
+                        toastTextView.setWidth(240);
+                        toastTextView.setGravity(Gravity.CENTER);
+                        toastTextView.setTypeface(toastTextView.getTypeface(), Typeface.BOLD);
+                        toastTextView.setTextSize(60);
+                        toast.show();
                         clickRight();
                     } else {
                         // 왼쪽 스와이프
-                        Toast.makeText(FilesActivity.this, "←", Toast.LENGTH_SHORT).show();
+                        Toast toast = Toast.makeText(FilesActivity.this, "←", Toast.LENGTH_SHORT);
+                        TextView toastTextView = toast.getView().findViewById(android.R.id.message);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toastTextView.setHeight(300);
+                        toastTextView.setWidth(240);
+                        toastTextView.setGravity(Gravity.CENTER);
+                        toastTextView.setTypeface(toastTextView.getTypeface(), Typeface.BOLD);
+                        toastTextView.setTextSize(60);
+                        toast.show();
                         clickLeft();
                     }
                 }
@@ -362,11 +381,27 @@ public class FilesActivity extends AppCompatActivity {
                 if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffY > 0) {
                         // 아래로 스와이프
-                        Toast.makeText(FilesActivity.this, "↓", Toast.LENGTH_SHORT).show();
+                        Toast toast = Toast.makeText(FilesActivity.this, "↓", Toast.LENGTH_SHORT);
+                        TextView toastTextView = toast.getView().findViewById(android.R.id.message);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toastTextView.setHeight(300);
+                        toastTextView.setWidth(240);
+                        toastTextView.setGravity(Gravity.CENTER);
+                        toastTextView.setTypeface(toastTextView.getTypeface(), Typeface.BOLD);
+                        toastTextView.setTextSize(60);
+                        toast.show();
                         clickDown();
                     } else {
                         // 위로 스와이프
-                        Toast.makeText(FilesActivity.this, "↑", Toast.LENGTH_SHORT).show();
+                        Toast toast = Toast.makeText(FilesActivity.this, "↑", Toast.LENGTH_SHORT);
+                        TextView toastTextView = toast.getView().findViewById(android.R.id.message);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toastTextView.setHeight(300);
+                        toastTextView.setWidth(240);
+                        toastTextView.setGravity(Gravity.CENTER);
+                        toastTextView.setTypeface(toastTextView.getTypeface(), Typeface.BOLD);
+                        toastTextView.setTextSize(60);
+                        toast.show();
                         clickUp();
                     }
                 }

@@ -1,18 +1,19 @@
 package app.bqlab.febblindrecorder;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.media.AudioAttributes;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.media.SoundPool;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -30,7 +31,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,16 +39,19 @@ import java.util.Locale;
 public class TextActivity extends AppCompatActivity {
 
     //constants
-    final int PLAY_FILE = 0;
-    final int FILE_TO_TEXT = 1;
+    final int TEXT_VIEWER = 0;
+    final int GET_ALARM = 1;
+    final int GET_PHONE = 2;
+    final int GET_MAP = 3;
+    final int SPEECH_TO_TEXT = 1000;
     //variables
     int focus, soundDisable;
     String fileName, fileDir, filePath, flag;
+    String viewerContent, phoneNumber;
+    ArrayList<String> speech;
     //objects
     File mFile;
     TextToSpeech mTTS;
-    MediaPlayer mPlayer;
-    MediaRecorder mRecorder;
     HashMap<String, String> mTTSMap;
     SoundPool mSoundPool;
     Thread speakThread;
@@ -101,6 +104,33 @@ public class TextActivity extends AppCompatActivity {
         return super.onTouchEvent(event);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == SPEECH_TO_TEXT) {
+                if (data != null) {
+                    speech = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    switch (focus) {
+                        case GET_ALARM:
+                            shutupTTS();
+                            break;
+                        case GET_PHONE:
+                            shutupTTS();
+                            if (speech.get(0).equals("전화")) {
+                                Intent intent = new Intent(Intent.ACTION_CALL);
+                                intent.setData(Uri.parse("tel:" + phoneNumber));
+                                startActivity(intent);
+                            }
+                            break;
+                        case GET_MAP:
+                            shutupTTS();
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
     private void init() {
         //initialize
         textBody = findViewById(R.id.text_body);
@@ -138,6 +168,9 @@ public class TextActivity extends AppCompatActivity {
             textBodyViewer = findViewById(R.id.text_body_viewer);
             textBodyViewer.setText(s);
         }
+        //for test
+        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월9일 교통대학교 정문카페에서 미팅");
+        viewerContent = textBodyViewer.getText().toString();
     }
 
     private void clickUp() {
@@ -168,7 +201,7 @@ public class TextActivity extends AppCompatActivity {
                 i.putExtra("filePath", file.getPath());
                 i.putExtra("flag", flag);
                 startActivity(i);
-            } else if(isTxtFile(filePath)) {
+            } else if (isTxtFile(filePath)) {
                 File file = new File(fileDir, fileName);
                 Intent i = new Intent(this, FilesActivity.class);
                 i.putExtra("filePath", file.getPath());
@@ -184,9 +217,32 @@ public class TextActivity extends AppCompatActivity {
 
     private void clickRight() {
         switch (focus) {
-            case PLAY_FILE:
+            case TEXT_VIEWER:
+                speakFocus();
                 break;
-            case FILE_TO_TEXT:
+            case GET_ALARM:
+                break;
+            case GET_PHONE:
+                speakThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            phoneNumber = getPhoneNumber(viewerContent);
+                            if (phoneNumber == null) {
+                                speak("전화번호가 인식되지 않았습니다.");
+                            } else {
+                                speak("인식된 전화번호는 " + phoneNumber + " 입니다. 전화를 원하시면 잠시 후 전화라고 말씀하세요.");
+                                Thread.sleep(3000);
+                                requestSpeech("전화를 원하시면 전화라고 말씀하세요.", GET_PHONE);
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                speakThread.start();
+                break;
+            case GET_MAP:
                 break;
         }
     }
@@ -258,6 +314,7 @@ public class TextActivity extends AppCompatActivity {
             }
         });
         speakThread.start();
+        Log.d("focus", String.valueOf(focus));
     }
 
     private void speakFirst() {
@@ -296,6 +353,14 @@ public class TextActivity extends AppCompatActivity {
         return fileExtension.equalsIgnoreCase("txt");
     }
 
+    private void requestSpeech(String content, int code) {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREA);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, content);
+        startActivityForResult(intent, code);
+    }
+
     private String getFileExtension(String filePath) {
         String fileExtension = "";
         int dotIndex = filePath.lastIndexOf(".");
@@ -303,6 +368,49 @@ public class TextActivity extends AppCompatActivity {
             fileExtension = filePath.substring(dotIndex + 1);
         }
         return fileExtension;
+    }
+
+    private String getPhoneNumber(String input) {
+        ArrayList<String> numberArray = new ArrayList<>();
+
+        String hr1 = "^(\\d{2,3}-)?\\d{3,4}-\\d{4}$"; //하이픈이 있는 개인번호 정규식
+        String nr1 = "^01[016789]\\d{7,8}$";          //하이픈이 없는 개인번호 정규식
+        String hr2 = "^(02|0[3-9]\\d{1,2})-\\d{3,4}-\\d{4}$";  //하이픈이 있는 지역번호 정규식
+        String nr2 = "^(02|0[3-9]\\d{1,2})\\d{7,8}$";          //하이픈이 없는 지역번호 정규식
+
+        if (input != null && !input.isEmpty()) {
+            String[] parts = input.split(" ");
+            for (String part : parts) {
+                Log.d("파트", part);
+                if (part.matches(hr1)) {
+                    part = part.replaceAll("-", "");
+                    Log.d("파트 더함", part);
+                    numberArray.add(part);
+                    break;
+                } else if (part.matches(nr1)) {
+                    Log.d("파트 더함", part);
+                    numberArray.add(part);
+                    break;
+                } else if (part.matches(hr2)) {
+                    Log.d("파트 더함", part);
+                    part = part.replaceAll("-", "");
+                    numberArray.add(part);
+                    break;
+                } else if (part.matches(nr2)) {
+                    Log.d("파트 더함", part);
+                    numberArray.add(part);
+                    break;
+                }
+            }
+        }
+
+        if (numberArray.size() == 0) {
+            return null;
+        } else if (numberArray.size() > 1) {
+            //이후 업데이트를 통해 여러개의 전화번호를 처리할 때 사용
+            return numberArray.get(0);
+        } else
+            return numberArray.get(0);
     }
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {

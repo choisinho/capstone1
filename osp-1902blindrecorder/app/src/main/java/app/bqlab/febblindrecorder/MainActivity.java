@@ -321,11 +321,23 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
             permissionsToRequest.add(Manifest.permission.RECORD_AUDIO);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE) != PackageManager.PERMISSION_GRANTED)
             permissionsToRequest.add(Manifest.permission.VIBRATE);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED)
+            permissionsToRequest.add(Manifest.permission.BLUETOOTH);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED)
+            permissionsToRequest.add(Manifest.permission.BLUETOOTH_ADMIN);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED)
+            permissionsToRequest.add(Manifest.permission.CALL_PHONE);
 
         if (!permissionsToRequest.isEmpty()) {
             String[] permissionsArray = permissionsToRequest.toArray(new String[0]);

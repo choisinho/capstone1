@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TextActivity extends AppCompatActivity {
 
@@ -169,7 +171,7 @@ public class TextActivity extends AppCompatActivity {
             textBodyViewer.setText(s);
         }
         //for test
-        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월9일 교통대학교 정문카페에서 미팅");
+        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월9일 오후 12시 교통대학교 정문카페에서 미팅");
         viewerContent = textBodyViewer.getText().toString();
     }
 
@@ -411,6 +413,33 @@ public class TextActivity extends AppCompatActivity {
             return numberArray.get(0);
         } else
             return numberArray.get(0);
+    }
+
+    private String getDateTime(String input) {
+        String dateTime = null;
+
+        Pattern p1 = Pattern.compile("\\d{1,2}월\\s\\d{1,2}일\\s\\d{1,2}시");
+        Pattern p2 = Pattern.compile("\\d{1,2}월/\\d{1,2}일/\\d{1,2}시");
+        Pattern p3 = Pattern.compile("\\d{1,2}월\\.\\d{1,2}일\\.\\d{1,2}시");
+        Pattern p4 = Pattern.compile("\\d{1,2}월\\s\\d{1,2}일\\s[오후|오전]?\\s?\\d{1,2}시");
+        Pattern p5 = Pattern.compile("\\d{1,2}월-\\d{1,2}일");
+        Pattern p6 = Pattern.compile("\\d{1,2}월/\\d{1,2}일");
+        Pattern p7 = Pattern.compile("\\d{1,2}월\\.\\d{1,2}일");
+        Pattern p8 = Pattern.compile("\\d{1,2}월\\d{1,2}일\\d{1,2}시");
+        Pattern p9 = Pattern.compile("\\d{1,2}월\\d{1,2}일");
+        Pattern p10 = Pattern.compile("\\d{1,2}시");
+
+        Pattern[] patterns = {p1, p2, p3, p4, p5, p6, p7, p8, p9, p10};
+
+        for (Pattern pattern : patterns) {
+            Matcher matcher = pattern.matcher(input);
+            if (matcher.find()) {
+                dateTime = matcher.group();
+                break;
+            }
+        }
+
+        return dateTime;
     }
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {

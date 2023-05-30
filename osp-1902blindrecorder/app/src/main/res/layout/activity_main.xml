@@ -9,8 +9,9 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/main_"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="10dp"
         android:background="@color/colorWhite"
@@ -86,11 +87,12 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/main_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+<!--    <ImageView-->
+<!--        android:layout_below="@id/main_"-->
+<!--        android:layout_margin="20dp"-->
+<!--        android:background="@color/colorWhiteDark"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="140dp"/>-->
 
     <TextView
         android:layout_width="wrap_content"
@@ -101,4 +103,11 @@
         android:text="ViProject All right reserved."
         android:textColor="@color/colorPrimary"
         android:textSize="16sp" />
+
+    <ProgressBar
+        android:id="@+id/main_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
 </RelativeLayout>

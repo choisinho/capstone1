@@ -49,7 +49,7 @@ public class TextActivity extends AppCompatActivity {
     //variables
     int focus, soundDisable;
     String fileName, fileDir, filePath, flag;
-    String viewerContent, phoneNumber;
+    String viewerContent, phoneNumber, dateTime;
     ArrayList<String> speech;
     //objects
     File mFile;
@@ -115,6 +115,9 @@ public class TextActivity extends AppCompatActivity {
                     switch (focus) {
                         case GET_ALARM:
                             shutupTTS();
+                            if (speech.get(0).equals("알람")) {
+                                //알람 기능 만들기
+                            }
                             break;
                         case GET_PHONE:
                             shutupTTS();
@@ -171,7 +174,7 @@ public class TextActivity extends AppCompatActivity {
             textBodyViewer.setText(s);
         }
         //for test
-        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월9일 오후 12시 교통대학교 정문카페에서 미팅");
+        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월 9일 오후 12시 교통대학교 정문카페에서 미팅");
         viewerContent = textBodyViewer.getText().toString();
     }
 
@@ -223,6 +226,24 @@ public class TextActivity extends AppCompatActivity {
                 speakFocus();
                 break;
             case GET_ALARM:
+                speakThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            dateTime = getDateTime(viewerContent);
+                            if (dateTime == null) {
+                                speak("일정 관련 정보가 인식되지 않았습니다.");
+                            } else {
+                                speak("인식된 일정은 " + dateTime + " 입니다. 알람을 원하시면 잠시후 알람을 말하세요.");
+                                Thread.sleep(3000);
+                                requestSpeech("알람을 원하시면 알람이라고 말씀하세요.", GET_ALARM);
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                speakThread.start();
                 break;
             case GET_PHONE:
                 speakThread = new Thread(new Runnable() {
@@ -415,30 +436,33 @@ public class TextActivity extends AppCompatActivity {
             return numberArray.get(0);
     }
 
-    private String getDateTime(String input) {
-        String dateTime = null;
+    public String getDateTime(String input) {
+        String mon = "\\d{1,2}월";
+        String day = "\\d{1,2}일";
+        String hur = "\\d{1,2}시";
+        String min = "\\d{1,2}분";
+        String dateTime;
 
-        Pattern p1 = Pattern.compile("\\d{1,2}월\\s\\d{1,2}일\\s\\d{1,2}시");
-        Pattern p2 = Pattern.compile("\\d{1,2}월/\\d{1,2}일/\\d{1,2}시");
-        Pattern p3 = Pattern.compile("\\d{1,2}월\\.\\d{1,2}일\\.\\d{1,2}시");
-        Pattern p4 = Pattern.compile("\\d{1,2}월\\s\\d{1,2}일\\s[오후|오전]?\\s?\\d{1,2}시");
-        Pattern p5 = Pattern.compile("\\d{1,2}월-\\d{1,2}일");
-        Pattern p6 = Pattern.compile("\\d{1,2}월/\\d{1,2}일");
-        Pattern p7 = Pattern.compile("\\d{1,2}월\\.\\d{1,2}일");
-        Pattern p8 = Pattern.compile("\\d{1,2}월\\d{1,2}일\\d{1,2}시");
-        Pattern p9 = Pattern.compile("\\d{1,2}월\\d{1,2}일");
-        Pattern p10 = Pattern.compile("\\d{1,2}시");
-
-        Pattern[] patterns = {p1, p2, p3, p4, p5, p6, p7, p8, p9, p10};
-
-        for (Pattern pattern : patterns) {
-            Matcher matcher = pattern.matcher(input);
-            if (matcher.find()) {
-                dateTime = matcher.group();
-                break;
+        String[] parts = input.split(" ");
+        StringBuilder dt = new StringBuilder();
+        for (String part : parts) {
+            Log.d("파트", part);
+            if (part.matches(mon)) {
+                dt.append(part);
+            } else if (part.matches(day)) {
+                dt.append(part);
+            } else if (part.equals("오전") || part.equals("오후")) {
+                dt.append(part);
+            } else if (part.matches(hur)) {
+                dt.append(part);
+            } else if (part.matches(min)) {
+                dt.append(part);
             }
         }
-
+        dateTime = dt.toString();
+        if ((dateTime.contains("오전") || dateTime.contains("오후") && !dateTime.contains("시")))
+            dateTime = null;
+        Log.d("결과", dateTime);
         return dateTime;
     }
 

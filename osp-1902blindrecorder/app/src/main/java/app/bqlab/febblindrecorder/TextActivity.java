@@ -122,13 +122,17 @@ public class TextActivity extends AppCompatActivity {
             if (requestCode == SPEECH_TO_TEXT) {
                 if (data != null) {
                     speech = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    Log.d("못알아 쳐먹니?", speech.get(0));
                     switch (focus) {
                         case GET_ALARM:
                             shutupTTS();
                             if (speech.get(0).equals("설정")) {
                                 try {
-                                    setupAlarm(stringToDate(viewerContent));
-                                    speak(dateTime + "에 알람이 울립니다.");
+                                    boolean alarmRes = setupAlarm(stringToDate(viewerContent));
+                                    if (alarmRes)
+                                        speak(dateTime + "에 알람이 울립니다.");
+                                    else
+                                        speak("알람을 설정할 수 없습니다.");
                                 } catch (ParseException e) {
                                     e.printStackTrace();
                                 }
@@ -189,7 +193,7 @@ public class TextActivity extends AppCompatActivity {
             textBodyViewer.setText(s);
         }
         //for test
-        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월 1일 17시 24분 교통대학교 정문카페에서 미팅");
+        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월 1일 20시 44분 교통대학교 정문카페에서 미팅");
         viewerContent = textBodyViewer.getText().toString();
     }
 
@@ -250,13 +254,10 @@ public class TextActivity extends AppCompatActivity {
                                 speak("일정 관련 정보가 인식되지 않았습니다.");
                             } else {
                                 speak("인식된 일정은 " + dateTime + " 입니다. 알람을 설정하려면 잠시후 설정이라고 말씀하세요.");
-                                Thread.sleep(3000);
-
-//                                requestSpeech("알람을 설정하려면 설정이라고 말씀하세요.", GET_ALARM);
-                                setupAlarm(stringToDate(viewerContent));
-                                speak(dateTime + "에 알람이 울립니다.");
+                                Thread.sleep(10000);
+                                requestSpeech("알람을 설정하려면 설정이라고 말씀하세요.");
                             }
-                        } catch (InterruptedException | ParseException e) {
+                        } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
@@ -273,8 +274,8 @@ public class TextActivity extends AppCompatActivity {
                                 speak("전화번호가 인식되지 않았습니다.");
                             } else {
                                 speak("인식된 전화번호는 " + phoneNumber + " 입니다. 전화를 원하시면 잠시 후 전화라고 말씀하세요.");
-                                Thread.sleep(3000);
-                                requestSpeech("전화를 원하시면 전화라고 말씀하세요.", GET_PHONE);
+                                Thread.sleep(10000);
+                                requestSpeech("전화를 원하시면 전화라고 말씀하세요.");
                             }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -300,7 +301,7 @@ public class TextActivity extends AppCompatActivity {
         }
     }
 
-    private void setupAlarm(Date date) {
+    private boolean setupAlarm(Date date) {
         alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
@@ -310,11 +311,12 @@ public class TextActivity extends AppCompatActivity {
         calendar.set(Calendar.SECOND, 0);
 
         if (calendar.before(Calendar.getInstance()))
-            speak("알람을 설정할 수 없습니다.");
-        else if (alarmManager != null)
+            return false;
+        else if (alarmManager != null) {
             alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        else
-            speak("알람을 설정할 수 없습니다.");
+            return true;
+        } else
+            return false;
     }
 
     private void setupSoundPool() {
@@ -411,12 +413,12 @@ public class TextActivity extends AppCompatActivity {
         return fileExtension.equalsIgnoreCase("txt");
     }
 
-    private void requestSpeech(String content, int code) {
+    private void requestSpeech(String msg) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREA);
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, content);
-        startActivityForResult(intent, code);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, msg);
+        startActivityForResult(intent, SPEECH_TO_TEXT);
     }
 
     private String getFileExtension(String filePath) {

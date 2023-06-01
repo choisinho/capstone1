@@ -339,6 +339,9 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED)
             permissionsToRequest.add(Manifest.permission.CALL_PHONE);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SET_ALARM) != PackageManager.PERMISSION_GRANTED)
+            permissionsToRequest.add(Manifest.permission.SET_ALARM);
+
         if (!permissionsToRequest.isEmpty()) {
             String[] permissionsArray = permissionsToRequest.toArray(new String[0]);
             ActivityCompat.requestPermissions(this, permissionsArray, 0);

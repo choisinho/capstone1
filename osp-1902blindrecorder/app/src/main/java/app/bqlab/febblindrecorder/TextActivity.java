@@ -126,7 +126,12 @@ public class TextActivity extends AppCompatActivity {
                         case GET_ALARM:
                             shutupTTS();
                             if (speech.get(0).equals("설정")) {
-                                //알람 기능 만들기
+                                try {
+                                    setupAlarm(stringToDate(viewerContent));
+                                    speak(dateTime + "에 알람이 울립니다.");
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
                             }
                             break;
                         case GET_PHONE:
@@ -184,7 +189,7 @@ public class TextActivity extends AppCompatActivity {
             textBodyViewer.setText(s);
         }
         //for test
-        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월 9일 오후 12시 교통대학교 정문카페에서 미팅");
+        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월 1일 17시 24분 교통대학교 정문카페에서 미팅");
         viewerContent = textBodyViewer.getText().toString();
     }
 
@@ -246,10 +251,10 @@ public class TextActivity extends AppCompatActivity {
                             } else {
                                 speak("인식된 일정은 " + dateTime + " 입니다. 알람을 설정하려면 잠시후 설정이라고 말씀하세요.");
                                 Thread.sleep(3000);
-//                                requestSpeech("알람을 설정하려면 설정이라고 말씀하세요.", GET_ALARM);
 
-                                //for test
-                                Log.d("바뀌었는지?", stringToDate(dateTime).toString());
+//                                requestSpeech("알람을 설정하려면 설정이라고 말씀하세요.", GET_ALARM);
+                                setupAlarm(stringToDate(viewerContent));
+                                speak(dateTime + "에 알람이 울립니다.");
                             }
                         } catch (InterruptedException | ParseException e) {
                             e.printStackTrace();
@@ -295,9 +300,21 @@ public class TextActivity extends AppCompatActivity {
         }
     }
 
-    private void setupAlarm(String dateTime) {
-        Intent intent = new Intent(this, AlarmReceiver.class);
+    private void setupAlarm(Date date) {
+        alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.SECOND, 0);
+
+        if (calendar.before(Calendar.getInstance()))
+            speak("알람을 설정할 수 없습니다.");
+        else if (alarmManager != null)
+            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        else
+            speak("알람을 설정할 수 없습니다.");
     }
 
     private void setupSoundPool() {
@@ -486,7 +503,8 @@ public class TextActivity extends AppCompatActivity {
 
     private Date stringToDate(String input) throws java.text.ParseException {
         input = toDateForm(input);
-        DateFormat format = new SimpleDateFormat("yyyy년MM월dd일HH시mm분", Locale.KOREAN);;
+        dateTime = input; //사용자가 적은 형식에서 앱에서 사용하는 구체적인 형식으로 변경시킴
+        DateFormat format = new SimpleDateFormat("yyyy년MM월dd일HH시mm분", Locale.KOREAN);
         Calendar calendar = Calendar.getInstance();
         Date date = format.parse(input);
         calendar.setTime(date);
@@ -510,6 +528,7 @@ public class TextActivity extends AppCompatActivity {
             year = yearMatcher.group(0);
             date = date.replace("yyyy", year.substring(0, 4));
         }
+        Log.d("년", date.toString());
 
         // 월 추출
         Pattern monthPattern = Pattern.compile("\\d{1,2}월");
@@ -518,6 +537,7 @@ public class TextActivity extends AppCompatActivity {
             month = monthMatcher.group(0);
             date = date.replace("MM", String.format("%02d", Integer.parseInt(month.substring(0, month.length() - 1))));
         }
+        Log.d("월", date.toString());
 
         // 일 추출
         Pattern dayPattern = Pattern.compile("\\d{1,2}일");
@@ -526,20 +546,23 @@ public class TextActivity extends AppCompatActivity {
             day = dayMatcher.group(0);
             date = date.replace("dd", String.format("%02d", Integer.parseInt(day.substring(0, day.length() - 1))));
         }
+        Log.d("일", date.toString());
 
         // 시간 추출
         Pattern hourPattern = Pattern.compile("\\d{1,2}시");
         Matcher hourMatcher = hourPattern.matcher(input);
         if (hourMatcher.find()) {
             hour = hourMatcher.group(0);
-            date = date.replace("HH", String.format("%02d", Integer.parseInt(hour.substring(0, hour.length() - 1))));
-
             // "오후" 포함되어 있을 경우 시간에 12를 더함
-            if (input.contains("오후") && !hour.equals("12시")) {
+            if (input.contains("오후") && Integer.parseInt(hour.replace("시", "")) <= 12) {
                 int hourValue = Integer.parseInt(hour.substring(0, hour.length() - 1));
                 date = date.replace("HH", String.format("%02d", hourValue + 12));
+            } else {
+                int i = Integer.parseInt(hour.substring(0, hour.length() - 1));
+                date = date.replace("HH", String.format("%02d", i));
             }
         }
+        Log.d("시", date.toString());
 
         // 분 추출
         Pattern minutePattern = Pattern.compile("\\d{1,2}분");
@@ -548,6 +571,7 @@ public class TextActivity extends AppCompatActivity {
             minute = minuteMatcher.group(0);
             date = date.replace("mm", String.format("%02d", Integer.parseInt(minute.substring(0, minute.length() - 1))));
         }
+        Log.d("분", date.toString());
 
         Calendar calendar = Calendar.getInstance();
         date = date.replace("yyyy", String.valueOf(calendar.get(Calendar.YEAR)));
@@ -555,6 +579,7 @@ public class TextActivity extends AppCompatActivity {
         date = date.replace("dd", String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH)));
         date = date.replace("HH", String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY)));
         date = date.replace("mm", "00");
+        Log.d("결과", date.toString());
 
         return date;
     }

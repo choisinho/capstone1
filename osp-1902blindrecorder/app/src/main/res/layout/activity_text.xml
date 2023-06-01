@@ -46,7 +46,7 @@
             android:background="@drawable/app_button"
             android:clickable="false"
             android:focusable="false"
-            android:text="일정 불러오기"
+            android:text="알람 설정하기"
             android:textColor="@color/colorWhite"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -61,7 +61,7 @@
             android:background="@drawable/app_button"
             android:clickable="false"
             android:focusable="false"
-            android:text="전화번호 불러오기"
+            android:text="전화번호로 통화하기"
             android:textColor="@color/colorWhite"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -76,7 +76,7 @@
             android:background="@drawable/app_button"
             android:clickable="false"
             android:focusable="false"
-            android:text="장소 불러오기"
+            android:text="지도 앱을 실행하기"
             android:textColor="@color/colorWhite"
             android:textSize="16sp"
             android:textStyle="bold" />

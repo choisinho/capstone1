@@ -1,6 +1,8 @@
 package app.bqlab.febblindrecorder;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -13,6 +15,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -31,7 +34,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -58,6 +66,8 @@ public class TextActivity extends AppCompatActivity {
     SoundPool mSoundPool;
     Thread speakThread;
     GestureDetector gestureDetector;
+    AlarmManager alarmManager;
+    PendingIntent pendingIntent;
     //layouts
     LinearLayout textBody;
     List<View> textBodyButtons;
@@ -115,7 +125,7 @@ public class TextActivity extends AppCompatActivity {
                     switch (focus) {
                         case GET_ALARM:
                             shutupTTS();
-                            if (speech.get(0).equals("알람")) {
+                            if (speech.get(0).equals("설정")) {
                                 //알람 기능 만들기
                             }
                             break;
@@ -234,11 +244,14 @@ public class TextActivity extends AppCompatActivity {
                             if (dateTime == null) {
                                 speak("일정 관련 정보가 인식되지 않았습니다.");
                             } else {
-                                speak("인식된 일정은 " + dateTime + " 입니다. 알람을 원하시면 잠시후 알람을 말하세요.");
+                                speak("인식된 일정은 " + dateTime + " 입니다. 알람을 설정하려면 잠시후 설정이라고 말씀하세요.");
                                 Thread.sleep(3000);
-                                requestSpeech("알람을 원하시면 알람이라고 말씀하세요.", GET_ALARM);
+//                                requestSpeech("알람을 설정하려면 설정이라고 말씀하세요.", GET_ALARM);
+
+                                //for test
+                                Log.d("바뀌었는지?", stringToDate(dateTime).toString());
                             }
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException | ParseException e) {
                             e.printStackTrace();
                         }
                     }
@@ -280,6 +293,11 @@ public class TextActivity extends AppCompatActivity {
                 textBodyButtons.get(i).setBackground(getDrawable(R.drawable.app_button_focussed));
             }
         }
+    }
+
+    private void setupAlarm(String dateTime) {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
     }
 
     private void setupSoundPool() {
@@ -436,7 +454,7 @@ public class TextActivity extends AppCompatActivity {
             return numberArray.get(0);
     }
 
-    public String getDateTime(String input) {
+    private String getDateTime(String input) {
         String mon = "\\d{1,2}월";
         String day = "\\d{1,2}일";
         String hur = "\\d{1,2}시";
@@ -464,6 +482,81 @@ public class TextActivity extends AppCompatActivity {
             dateTime = null;
         Log.d("결과", dateTime);
         return dateTime;
+    }
+
+    private Date stringToDate(String input) throws java.text.ParseException {
+        input = toDateForm(input);
+        DateFormat format = new SimpleDateFormat("yyyy년MM월dd일HH시mm분", Locale.KOREAN);;
+        Calendar calendar = Calendar.getInstance();
+        Date date = format.parse(input);
+        calendar.setTime(date);
+        return calendar.getTime();
+    }
+
+    private String toDateForm(String input) {
+        String date = "yyyy년MM월dd일HH시mm분";
+
+        // 날짜 및 시간 요소 추출
+        String year = "";
+        String month = "";
+        String day = "";
+        String hour = "";
+        String minute = "";
+
+        // 년도 추출
+        Pattern yearPattern = Pattern.compile("\\d{4}년");
+        Matcher yearMatcher = yearPattern.matcher(input);
+        if (yearMatcher.find()) {
+            year = yearMatcher.group(0);
+            date = date.replace("yyyy", year.substring(0, 4));
+        }
+
+        // 월 추출
+        Pattern monthPattern = Pattern.compile("\\d{1,2}월");
+        Matcher monthMatcher = monthPattern.matcher(input);
+        if (monthMatcher.find()) {
+            month = monthMatcher.group(0);
+            date = date.replace("MM", String.format("%02d", Integer.parseInt(month.substring(0, month.length() - 1))));
+        }
+
+        // 일 추출
+        Pattern dayPattern = Pattern.compile("\\d{1,2}일");
+        Matcher dayMatcher = dayPattern.matcher(input);
+        if (dayMatcher.find()) {
+            day = dayMatcher.group(0);
+            date = date.replace("dd", String.format("%02d", Integer.parseInt(day.substring(0, day.length() - 1))));
+        }
+
+        // 시간 추출
+        Pattern hourPattern = Pattern.compile("\\d{1,2}시");
+        Matcher hourMatcher = hourPattern.matcher(input);
+        if (hourMatcher.find()) {
+            hour = hourMatcher.group(0);
+            date = date.replace("HH", String.format("%02d", Integer.parseInt(hour.substring(0, hour.length() - 1))));
+
+            // "오후" 포함되어 있을 경우 시간에 12를 더함
+            if (input.contains("오후") && !hour.equals("12시")) {
+                int hourValue = Integer.parseInt(hour.substring(0, hour.length() - 1));
+                date = date.replace("HH", String.format("%02d", hourValue + 12));
+            }
+        }
+
+        // 분 추출
+        Pattern minutePattern = Pattern.compile("\\d{1,2}분");
+        Matcher minuteMatcher = minutePattern.matcher(input);
+        if (minuteMatcher.find()) {
+            minute = minuteMatcher.group(0);
+            date = date.replace("mm", String.format("%02d", Integer.parseInt(minute.substring(0, minute.length() - 1))));
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        date = date.replace("yyyy", String.valueOf(calendar.get(Calendar.YEAR)));
+        date = date.replace("MM", String.valueOf(calendar.get(Calendar.MONTH)));
+        date = date.replace("dd", String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH)));
+        date = date.replace("HH", String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY)));
+        date = date.replace("mm", "00");
+
+        return date;
     }
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {

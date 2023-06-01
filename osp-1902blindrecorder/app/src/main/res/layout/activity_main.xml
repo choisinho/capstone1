@@ -5,13 +5,44 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhiteDark"
+    android:background="@color/colorWhite"
     tools:context=".MainActivity">
 
+    <RelativeLayout
+        android:id="@+id/main_top"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="@drawable/main_top_back"
+        android:clickable="false"
+        android:focusable="false">
+
+        <TextView
+            android:id="@+id/main_top_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"
+            android:text="이어폰을 사용하지 않고 있다면?\n사용해볼 것을 권장합니다!!"
+            android:textAlignment="center"
+            android:typeface="monospace"
+            android:textColor="@color/colorBlack"
+            android:textSize="18sp"
+            android:textStyle="italic|bold" />
+
+
+        <ImageView
+            android:layout_below="@id/main_top_text"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/main_top_img" />
+
+    </RelativeLayout>
+
     <LinearLayout
-        android:id="@+id/main_"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/main_top"
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="10dp"
         android:background="@color/colorWhite"
@@ -86,23 +117,6 @@
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
-
-<!--    <ImageView-->
-<!--        android:layout_below="@id/main_"-->
-<!--        android:layout_margin="20dp"-->
-<!--        android:background="@color/colorWhiteDark"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="140dp"/>-->
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:text="ViProject All right reserved."
-        android:textColor="@color/colorPrimary"
-        android:textSize="16sp" />
 
     <ProgressBar
         android:id="@+id/main_loading"

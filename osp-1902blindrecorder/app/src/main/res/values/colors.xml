@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorWhite">#ffffffff</color>
-    <color name="colorWhiteDark">#fafafa</color>
+    <color name="colorWhiteDark">#33000000</color>
     <color name="colorGrape">#4a405b</color>
     <color name="colorGrapeDark">#26212f</color>
     <color name="colorBlack">#000000</color>

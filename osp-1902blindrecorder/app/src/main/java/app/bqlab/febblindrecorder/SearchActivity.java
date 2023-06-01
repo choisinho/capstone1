@@ -102,7 +102,7 @@ public class SearchActivity extends AppCompatActivity {
                             File mp4File = new File(fileDir, fileName + ".mp4");
                             File txtFile = new File(fileDir, fileName + ".txt");
                             if (mp4File.exists() && txtFile.exists()) {
-                                requestSpeech("음성 또는 텍스트 중 하나를 말씀하세요.", CHECK_EXPRESSION);
+                                requestSpeech("음성 또는 텍스트 중 하나를 말씀하세요.");
                             } else if (mp4File.exists()) {
                                 Intent i = new Intent(this, PlayActivity.class);
                                 i.putExtra("filePath", mp4File.getPath());
@@ -199,7 +199,7 @@ public class SearchActivity extends AppCompatActivity {
         switch (focus) {
             case SEARCH_BY_NAME:
                 shutupTTS();
-                requestSpeech("파일이름을 말씀하세요.", SEARCH_BY_NAME);
+                requestSpeech("파일이름을 말씀하세요.");
                 break;
             case SEARCH_BY_LIST:
                 if (new File(fileDir).list().length != 0)
@@ -322,12 +322,12 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private void requestSpeech(String content, int code) {
+    private void requestSpeech(String content) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.KOREA);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, content);
-        startActivityForResult(intent, code);
+        startActivityForResult(intent, SPEECH_TO_TEXT);
     }
 
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {

@@ -82,11 +82,12 @@ public class TextActivity extends AppCompatActivity {
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                loading.setVisibility(View.GONE);
+                if (loading != null)
+                    loading.setVisibility(View.GONE);
+                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 init();
                 resetFocus();
                 setupSoundPool();
-                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }
@@ -192,9 +193,11 @@ public class TextActivity extends AppCompatActivity {
             textBodyViewer = findViewById(R.id.text_body_viewer);
             textBodyViewer.setText(s);
         }
+        viewerContent = textBodyViewer.getText().toString(); //위치 바꾸지 말것
+
         //for test
-        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월 1일 20시 44분 교통대학교 정문카페에서 미팅");
-        viewerContent = textBodyViewer.getText().toString();
+//        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월 1일 20시 44분 교통대학교 정문카페에서 미팅");
+//        viewerContent = textBodyViewer.getText().toString();
     }
 
     private void clickUp() {

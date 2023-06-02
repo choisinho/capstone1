@@ -76,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                loading.setVisibility(View.GONE);
+                if (loading != null)
+                    loading.setVisibility(View.GONE);
                 requestPermissions();
                 init();
                 resetFocus();
@@ -241,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupTTS() {
         //TTS 지원 확인 및 속성 세팅
+        if (mTTS != null) mTTS.shutdown();
         mTTS = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {

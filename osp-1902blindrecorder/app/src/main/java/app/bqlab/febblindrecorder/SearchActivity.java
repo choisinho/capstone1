@@ -61,7 +61,8 @@ public class SearchActivity extends AppCompatActivity {
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                loading.setVisibility(View.GONE);
+                if (loading != null)
+                    loading.setVisibility(View.GONE);
                 init();
                 setupTTS();
                 setupSoundPool();

@@ -44,20 +44,20 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/play_body_text"
-                style="@style/Base.Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/app_button"
-                android:clickable="false"
-                android:focusable="false"
-                android:text="녹음파일 텍스트로 보기"
-                android:textColor="@color/colorWhite"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+<!--            <Button-->
+<!--                android:id="@+id/play_body_text"-->
+<!--                style="@style/Base.Widget.AppCompat.Button.Borderless"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="70dp"-->
+<!--                android:layout_marginHorizontal="10dp"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:background="@drawable/app_button"-->
+<!--                android:clickable="false"-->
+<!--                android:focusable="false"-->
+<!--                android:text="녹음파일 텍스트로 보기"-->
+<!--                android:textColor="@color/colorWhite"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textStyle="bold" />-->
         </LinearLayout>
     </LinearLayout>
 

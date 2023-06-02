@@ -69,10 +69,10 @@ public class FoldersActivity extends AppCompatActivity {
             public void onGlobalLayout() {
                 if (loading != null)
                     loading.setVisibility(View.GONE);
+                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 init();
                 loadFolders();
                 resetFocus();
-                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }

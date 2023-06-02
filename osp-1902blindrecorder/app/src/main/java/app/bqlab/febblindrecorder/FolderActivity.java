@@ -61,13 +61,14 @@ public class FolderActivity extends AppCompatActivity {
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                if (loading != null)
+                if (loading != null) {
                     loading.setVisibility(View.GONE);
+                }
+                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 init();
                 setupTTS();
                 setupSoundPool();
                 resetFocus();
-                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }

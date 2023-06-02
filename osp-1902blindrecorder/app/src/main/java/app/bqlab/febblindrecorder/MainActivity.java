@@ -78,11 +78,11 @@ public class MainActivity extends AppCompatActivity {
             public void onGlobalLayout() {
                 if (loading != null)
                     loading.setVisibility(View.GONE);
+                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 requestPermissions();
                 init();
                 resetFocus();
                 setupSoundPool();
-                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }

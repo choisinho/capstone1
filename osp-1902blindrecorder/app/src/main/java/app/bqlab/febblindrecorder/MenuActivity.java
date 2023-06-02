@@ -67,10 +67,10 @@ public class MenuActivity extends AppCompatActivity {
             public void onGlobalLayout() {
                 if (loading != null)
                     loading.setVisibility(View.GONE);
+                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 init();
                 resetFocus();
                 setupSoundPool();
-                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }

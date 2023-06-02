@@ -63,11 +63,11 @@ public class SearchActivity extends AppCompatActivity {
             public void onGlobalLayout() {
                 if (loading != null)
                     loading.setVisibility(View.GONE);
+                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 init();
                 setupTTS();
                 setupSoundPool();
                 resetFocus();
-                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }

@@ -59,12 +59,12 @@ public class FilesActivity extends AppCompatActivity {
             public void onGlobalLayout() {
                 if (loading != null)
                     loading.setVisibility(View.GONE);
+                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 init();
                 setupTTS();
                 loadFiles();
                 resetFocus();
                 setupSoundPool();
-                findViewById(android.R.id.content).getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }

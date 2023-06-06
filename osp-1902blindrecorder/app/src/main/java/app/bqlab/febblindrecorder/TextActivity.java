@@ -253,7 +253,7 @@ public class TextActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             dateTime = getDateTime(viewerContent);
-                            if (dateTime == null) {
+                            if (dateTime == null || dateTime.equals("")) {
                                 speak("일정 관련 정보가 인식되지 않았습니다.");
                             } else {
                                 speak("인식된 일정은 " + dateTime + " 입니다. 알람을 설정하려면 잠시후 설정이라고 말씀하세요.");

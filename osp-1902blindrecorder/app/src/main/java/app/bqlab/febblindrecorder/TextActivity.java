@@ -196,8 +196,8 @@ public class TextActivity extends AppCompatActivity {
         viewerContent = textBodyViewer.getText().toString(); //위치 바꾸지 말것
 
         //for test
-//        textBodyViewer.setText("제일산업 영업부 대리 김모씨 전화번호는 01012345678 6월 1일 20시 44분 교통대학교 정문카페에서 미팅");
-//        viewerContent = textBodyViewer.getText().toString();
+        textBodyViewer.setText("6월 8일에 오전 8시에 알람 맞춰 줘");
+        viewerContent = textBodyViewer.getText().toString();
     }
 
     private void clickUp() {
@@ -502,7 +502,11 @@ public class TextActivity extends AppCompatActivity {
         dateTime = dt.toString();
         if ((dateTime.contains("오전") || dateTime.contains("오후") && !dateTime.contains("시")))
             dateTime = null;
-        Log.d("결과", dateTime);
+        try {
+            Log.d("결과", dateTime);
+        } catch (NullPointerException e) {
+            e.fillInStackTrace();
+        }
         return dateTime;
     }
 

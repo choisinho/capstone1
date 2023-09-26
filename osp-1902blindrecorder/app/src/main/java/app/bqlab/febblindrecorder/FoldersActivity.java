@@ -379,6 +379,9 @@ public class FoldersActivity extends AppCompatActivity {
                         toastTextView.setTextSize(60);
                         toast.show();
                         requestSpeech();
+                        //테스트
+                        changeTestFolder("테스트");
+                        Log.d("테스트", "바뀜");
                     } else {
                         // 왼쪽 스와이프
                         Toast toast = Toast.makeText(FoldersActivity.this, "←", Toast.LENGTH_SHORT);

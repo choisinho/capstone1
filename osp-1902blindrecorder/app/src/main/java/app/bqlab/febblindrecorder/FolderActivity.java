@@ -69,6 +69,7 @@ public class FolderActivity extends AppCompatActivity {
                 setupTTS();
                 setupSoundPool();
                 resetFocus();
+                createTestFolder("나의메모");
             }
         });
     }

@@ -15,7 +15,6 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -57,8 +56,8 @@ public class TextActivity extends AppCompatActivity {
     //variables
     int focus, soundDisable;
     String fileName, fileDir, filePath, flag;
-    String viewerContent, phoneNumber, dateTime;
-    ArrayList<String> speech;
+    String viewerContent, dateTime;
+    ArrayList<String> speech, phoneNumbers;
     //objects
     File mFile;
     TextToSpeech mTTS;
@@ -143,7 +142,7 @@ public class TextActivity extends AppCompatActivity {
                             shutupTTS();
                             if (speech.get(0).equals("전화")) {
                                 Intent intent = new Intent(Intent.ACTION_CALL);
-                                intent.setData(Uri.parse("tel:" + phoneNumber));
+                                intent.setData(Uri.parse("tel:" + phoneNumbers));
                                 startActivity(intent);
                             }
                             break;
@@ -194,10 +193,9 @@ public class TextActivity extends AppCompatActivity {
             textBodyViewer.setText(s);
         }
         viewerContent = textBodyViewer.getText().toString(); //위치 바꾸지 말것
-
-        //for test
-        textBodyViewer.setText("6월 8일에 오전 8시에 알람 맞춰 줘");
-        viewerContent = textBodyViewer.getText().toString();
+//        //for test
+//        textBodyViewer.setText("6월 8일에 오전 8시에 알람 맞춰 줘");
+//        viewerContent = textBodyViewer.getText().toString();
     }
 
     private void clickUp() {
@@ -272,11 +270,11 @@ public class TextActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            phoneNumber = getPhoneNumber(viewerContent);
-                            if (phoneNumber == null) {
+                            phoneNumbers = getPhoneNumbers(viewerContent);
+                            if (phoneNumbers.size() == 0) {
                                 speak("전화번호가 인식되지 않았습니다.");
                             } else {
-                                speak("인식된 전화번호는 " + phoneNumber + " 입니다. 전화를 원하시면 잠시 후 전화라고 말씀하세요.");
+                                speak("인식된 전화번호는 " + phoneNumbers + " 입니다. 전화를 원하시면 잠시 후 전화라고 말씀하세요.");
                                 Thread.sleep(10000);
                                 requestSpeech("전화를 원하시면 전화라고 말씀하세요.");
                             }
@@ -433,47 +431,24 @@ public class TextActivity extends AppCompatActivity {
         return fileExtension;
     }
 
-    private String getPhoneNumber(String input) {
+    private ArrayList<String> getPhoneNumbers(String input) {
         ArrayList<String> numberArray = new ArrayList<>();
 
-        String hr1 = "^(\\d{2,3}-)?\\d{3,4}-\\d{4}$"; //하이픈이 있는 개인번호 정규식
-        String nr1 = "^01[016789]\\d{7,8}$";          //하이픈이 없는 개인번호 정규식
-        String hr2 = "^(02|0[3-9]\\d{1,2})-\\d{3,4}-\\d{4}$";  //하이픈이 있는 지역번호 정규식
-        String nr2 = "^(02|0[3-9]\\d{1,2})\\d{7,8}$";          //하이픈이 없는 지역번호 정규식
+        String hr1 = "\\d{2,3}-\\d{3,4}-\\d{4}"; // 하이픈이 있는 개인번호 정규식
+        String nr1 = "01[016789]\\d{7,8}";       // 하이픈이 없는 개인번호 정규식
+        String hr2 = "(02|0[3-9]\\d{1,2})-\\d{3,4}-\\d{4}";  // 하이픈이 있는 지역번호 정규식
+        String nr2 = "(02|0[3-9]\\d{1,2})\\d{7,8}";          // 하이픈이 없는 지역번호 정규식
 
         if (input != null && !input.isEmpty()) {
-            String[] parts = input.split(" ");
-            for (String part : parts) {
-                Log.d("파트", part);
-                if (part.matches(hr1)) {
-                    part = part.replaceAll("-", "");
-                    Log.d("파트 더함", part);
-                    numberArray.add(part);
-                    break;
-                } else if (part.matches(nr1)) {
-                    Log.d("파트 더함", part);
-                    numberArray.add(part);
-                    break;
-                } else if (part.matches(hr2)) {
-                    Log.d("파트 더함", part);
-                    part = part.replaceAll("-", "");
-                    numberArray.add(part);
-                    break;
-                } else if (part.matches(nr2)) {
-                    Log.d("파트 더함", part);
-                    numberArray.add(part);
-                    break;
-                }
+            Pattern pattern = Pattern.compile(hr1 + "|" + nr1 + "|" + hr2 + "|" + nr2);
+            Matcher matcher = pattern.matcher(input);
+            while (matcher.find()) {
+                Log.d("파트", matcher.group());
+                numberArray.add(matcher.group().replaceAll("-", ""));
             }
         }
 
-        if (numberArray.size() == 0) {
-            return null;
-        } else if (numberArray.size() > 1) {
-            //이후 업데이트를 통해 여러개의 전화번호를 처리할 때 사용
-            return numberArray.get(0);
-        } else
-            return numberArray.get(0);
+        return numberArray;
     }
 
     private String getDateTime(String input) {

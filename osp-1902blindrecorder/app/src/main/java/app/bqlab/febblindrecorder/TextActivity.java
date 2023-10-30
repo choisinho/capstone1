@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
@@ -55,8 +56,9 @@ public class TextActivity extends AppCompatActivity {
     final int SPEECH_TO_TEXT = 1000;
     //variables
     int focus, soundDisable;
-    String fileName, fileDir, filePath, flag;
+    String fileName, fileDir;
     String viewerContent, dateTime;
+    String iFilePath, iFlag;
     ArrayList<String> speech, phoneNumbers;
     //objects
     File mFile;
@@ -122,20 +124,11 @@ public class TextActivity extends AppCompatActivity {
             if (requestCode == SPEECH_TO_TEXT) {
                 if (data != null) {
                     speech = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    Log.d("못알아 쳐먹니?", speech.get(0));
                     switch (focus) {
                         case GET_ALARM:
                             shutupTTS();
                             if (speech.get(0).equals("설정")) {
-                                try {
-                                    boolean alarmRes = setupAlarm(stringToDate(viewerContent));
-                                    if (alarmRes)
-                                        speak(dateTime + "에 알람이 울립니다.");
-                                    else
-                                        speak("알람을 설정할 수 없습니다.");
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
+                                startAlarm();
                             }
                             break;
                         case GET_PHONE:
@@ -156,30 +149,41 @@ public class TextActivity extends AppCompatActivity {
     }
 
     private void init() {
-        //initialize
+        //layout
         textBody = findViewById(R.id.text_body);
         textBodyButtons = new ArrayList<View>();
         for (int i = 0; i < textBody.getChildCount(); i++)
             textBodyButtons.add(textBody.getChildAt(i));
 
-        //file
-        flag = getIntent().getStringExtra("flag");
-        filePath = getIntent().getStringExtra("filePath");
-        fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
-        fileName = filePath.replace(fileDir + File.separator, "");
-        mFile = new File(fileDir, fileName);
-        Log.d("filePath", filePath);
+        //init
+        iFlag = getIntent().getStringExtra("flag");
+        iFilePath = getIntent().getStringExtra("filePath");
 
-        //제스처
+        //file
+        try {
+            fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
+            fileName = iFilePath.replace(fileDir + File.separator, "");
+            mFile = new File(fileDir, fileName);
+            Log.d("filePath", iFilePath);
+        } catch (NullPointerException e) {
+            iFlag = getSharedPreferences("ALARM_RES", Context.MODE_PRIVATE).getString("flag", "");
+            iFilePath = getSharedPreferences("ALARM_RES", Context.MODE_PRIVATE).getString("filePath", "");
+            fileDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "음성메모장" + File.separator + getSharedPreferences("setting", MODE_PRIVATE).getString("SAVE_FOLDER_NAME", "");
+            fileName = iFilePath.replace(fileDir + File.separator, "");
+            mFile = new File(fileDir, fileName);
+            Log.d("filePath", iFilePath);
+        }
+
+        //gesture
         gestureDetector = new GestureDetector(this, new TextActivity.MyGestureListener());
 
         //layout
-        if (isMp4File(filePath)) {
+        if (isMp4File(iFilePath)) {
             //mp4 to txt
-        } else if (isTxtFile(filePath)) {
+        } else if (isTxtFile(iFilePath)) {
             String s = ""; // txt 파일의 내용을 저장할 변수
             try {
-                File file = new File(filePath);
+                File file = new File(iFilePath);
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -193,9 +197,10 @@ public class TextActivity extends AppCompatActivity {
             textBodyViewer.setText(s);
         }
         viewerContent = textBodyViewer.getText().toString(); //위치 바꾸지 말것
-//        //for test
-//        textBodyViewer.setText("6월 8일에 오전 8시에 알람 맞춰 줘");
+        //for test
+//        textBodyViewer.setText("2023년 10월 29일 오후 11시");
 //        viewerContent = textBodyViewer.getText().toString();
+        startAlarm();
     }
 
     private void clickUp() {
@@ -218,15 +223,14 @@ public class TextActivity extends AppCompatActivity {
 
     private void clickLeft() {
         shutupTTS();
-        String flag = getIntent().getStringExtra("flag");
-        if (flag.equals("list")) {
-            if (isMp4File(filePath)) {
+        if (iFlag.equals("list")) {
+            if (isMp4File(iFilePath)) {
                 File file = new File(fileDir, fileName);
                 Intent i = new Intent(this, PlayActivity.class);
                 i.putExtra("filePath", file.getPath());
-                i.putExtra("flag", flag);
+                i.putExtra("flag", iFlag);
                 startActivity(i);
-            } else if (isTxtFile(filePath)) {
+            } else if (isTxtFile(iFilePath)) {
                 File file = new File(fileDir, fileName);
                 Intent i = new Intent(this, FilesActivity.class);
                 i.putExtra("filePath", file.getPath());
@@ -234,7 +238,7 @@ public class TextActivity extends AppCompatActivity {
             } else
                 speak("잠시후 다시 시도해주세요.");
             finish();
-        } else if (flag.equals("name")) {
+        } else if (iFlag.equals("name")) {
             startActivity(new Intent(TextActivity.this, SearchActivity.class));
             finish();
         }
@@ -302,18 +306,39 @@ public class TextActivity extends AppCompatActivity {
         }
     }
 
+    private void startAlarm() {
+        try {
+            boolean alarmRes = setupAlarm(stringToDate(viewerContent));
+            if (alarmRes) {
+                SharedPreferences alarmPref = getSharedPreferences("ALARM_RES", Context.MODE_PRIVATE);
+                SharedPreferences.Editor prefEditor = alarmPref.edit();
+                prefEditor.putString("flag", iFlag);
+                prefEditor.putString("filePath", iFilePath);
+                prefEditor.apply();
+                speak(dateTime + "에 알람이 울립니다.");
+            } else
+                speak("알람을 설정할 수 없습니다.");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
     private boolean setupAlarm(Date date) {
         alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
+//        calendar.setTime(date);
+        calendar.setTime(delayForTest());
         calendar.set(Calendar.SECOND, 0);
 
-        if (calendar.before(Calendar.getInstance()))
+        Log.d("현재시각이 언제길래", Calendar.getInstance().getTime().toString());
+        Log.d("설정시각이 언제길래", String.valueOf(calendar.getTime()));
+
+        if (calendar.before(Calendar.getInstance())) { //설정시간이 현재시간 보다 이전일 경우
             return false;
-        else if (alarmManager != null) {
+        } else if (alarmManager != null) {
             alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
             return true;
         } else
@@ -452,31 +477,28 @@ public class TextActivity extends AppCompatActivity {
     }
 
     private String getDateTime(String input) {
-        String mon = "\\d{1,2}월";
-        String day = "\\d{1,2}일";
-        String hur = "\\d{1,2}시";
-        String min = "\\d{1,2}분";
         String dateTime;
-
         String[] parts = input.split(" ");
         StringBuilder dt = new StringBuilder();
         for (String part : parts) {
-            Log.d("파트", part);
-            if (part.matches(mon)) {
+            if (part.contains("년"))
                 dt.append(part);
-            } else if (part.matches(day)) {
+            else if (part.contains("월"))
                 dt.append(part);
-            } else if (part.equals("오전") || part.equals("오후")) {
+            else if (part.contains("일"))
                 dt.append(part);
-            } else if (part.matches(hur)) {
+            else if (part.equals("오전") || part.equals("오후"))
                 dt.append(part);
-            } else if (part.matches(min)) {
+            else if (part.contains("시"))
                 dt.append(part);
-            }
+            else if (part.contains("분"))
+                dt.append(part);
         }
         dateTime = dt.toString();
-        if ((dateTime.contains("오전") || dateTime.contains("오후") && !dateTime.contains("시")))
+        if ((dateTime.contains("오전") || dateTime.contains("오후")) && !dateTime.contains("시")) {
+            Log.d("dateTime is wrong", dateTime);
             dateTime = null;
+        }
         try {
             Log.d("결과", dateTime);
         } catch (NullPointerException e) {
@@ -493,6 +515,11 @@ public class TextActivity extends AppCompatActivity {
         Date date = format.parse(input);
         calendar.setTime(date);
         return calendar.getTime();
+    }
+
+    private Date delayForTest() { //for test
+        Date current = new Date();
+        return new Date(current.getTime() + (long) 60000);
     }
 
     private String toDateForm(String input) {

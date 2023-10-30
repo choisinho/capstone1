@@ -155,6 +155,12 @@ public class TextActivity extends AppCompatActivity {
                             break;
                         case GET_KAKAO:
                             shutupTTS();
+                            if (speech.get(0).equals("카톡")) {
+                                Intent intent = new Intent(Intent.ACTION_SEND);
+                                intent.setType("text/plain");
+                                intent.putExtra(Intent.EXTRA_TEXT, viewerContent);
+                                startActivity(intent);
+                            }
                             break;
                     }
                 }
@@ -329,6 +335,19 @@ public class TextActivity extends AppCompatActivity {
                 speakThread.start();
                 break;
             case GET_KAKAO:
+                speakThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            speak("카톡으로 공유하시려면 잠시 후 카톡이라고 말씀하세요.");
+                            Thread.sleep(10000);
+                            requestSpeech("공유를 원하시면 카톡이라고 말씀하세요.");
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                speakThread.start();
                 break;
         }
     }

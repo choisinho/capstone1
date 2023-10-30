@@ -52,7 +52,8 @@ public class TextActivity extends AppCompatActivity {
     final int TEXT_VIEWER = 0;
     final int GET_ALARM = 1;
     final int GET_PHONE = 2;
-    final int GET_MAP = 3;
+    final int GET_MESSAGE = 3;
+    final int GET_KAKAO = 4;
     final int SPEECH_TO_TEXT = 1000;
     //variables
     int focus, soundDisable;
@@ -72,7 +73,7 @@ public class TextActivity extends AppCompatActivity {
     //layouts
     LinearLayout textBody;
     List<View> textBodyButtons;
-    Button textBodyViewer, textBodyAlarm, textBodyPhone, textBodyMap, textBodyBack;
+    Button textBodyViewer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,22 +129,31 @@ public class TextActivity extends AppCompatActivity {
                         case GET_ALARM:
                             shutupTTS();
                             if (speech.get(0).equals("설정")) {
-//                                try {
-//                                    startAlarm(setupAlarm(stringToDate(viewerContent)));
-//                                } catch (ParseException e) {
-//                                    e.printStackTrace();
-//                                }
+                                try {
+                                    startAlarm(setupAlarm(stringToDate(viewerContent)));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
                             }
                             break;
                         case GET_PHONE:
                             shutupTTS();
                             if (speech.get(0).equals("전화")) {
-                                Intent intent = new Intent(Intent.ACTION_CALL);
-                                intent.setData(Uri.parse("tel:" + phoneNumbers));
+                                Intent intent = new Intent(Intent.ACTION_DIAL);
+                                intent.setData(Uri.parse("tel:" + phoneNumbers.get(0)));
                                 startActivity(intent);
                             }
                             break;
-                        case GET_MAP:
+                        case GET_MESSAGE:
+                            shutupTTS();
+                            if (speech.get(0).equals("문자")) {
+                                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                                intent.setData(Uri.parse("smsto:" + phoneNumbers.get(0)));
+                                intent.putExtra("sms_body", viewerContent);
+                                startActivity(intent);
+                            }
+                            break;
+                        case GET_KAKAO:
                             shutupTTS();
                             break;
                     }
@@ -283,11 +293,11 @@ public class TextActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            phoneNumbers = getPhoneNumbers(viewerContent);
+                            phoneNumbers = getPhoneNumbers(viewerContent); //일단은 여러 번호를 받게끔 만듦
                             if (phoneNumbers.size() == 0) {
                                 speak("전화번호가 인식되지 않았습니다.");
                             } else {
-                                speak("인식된 전화번호는 " + phoneNumbers + " 입니다. 전화를 원하시면 잠시 후 전화라고 말씀하세요.");
+                                speak("인식된 전화번호는 " + phoneNumbers.get(0) + " 입니다. 전화를 원하시면 잠시 후 전화라고 말씀하세요.");
                                 Thread.sleep(10000);
                                 requestSpeech("전화를 원하시면 전화라고 말씀하세요.");
                             }
@@ -298,7 +308,27 @@ public class TextActivity extends AppCompatActivity {
                 });
                 speakThread.start();
                 break;
-            case GET_MAP:
+            case GET_MESSAGE:
+                speakThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            phoneNumbers = getPhoneNumbers(viewerContent); //일단은 여러 번호를 받게끔 만듦
+                            if (phoneNumbers.size() == 0) {
+                                speak("전화번호가 인식되지 않았습니다.");
+                            } else {
+                                speak("인식된 전화번호는 " + phoneNumbers.get(0) + " 입니다. 문자를 원하시면 잠시 후 문자라고 말씀하세요.");
+                                Thread.sleep(10000);
+                                requestSpeech("문자를 원하시면 문자라고 말씀하세요.");
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                speakThread.start();
+                break;
+            case GET_KAKAO:
                 break;
         }
     }

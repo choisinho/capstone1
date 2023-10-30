@@ -128,7 +128,11 @@ public class TextActivity extends AppCompatActivity {
                         case GET_ALARM:
                             shutupTTS();
                             if (speech.get(0).equals("설정")) {
-                                startAlarm();
+//                                try {
+//                                    startAlarm(setupAlarm(stringToDate(viewerContent)));
+//                                } catch (ParseException e) {
+//                                    e.printStackTrace();
+//                                }
                             }
                             break;
                         case GET_PHONE:
@@ -200,7 +204,12 @@ public class TextActivity extends AppCompatActivity {
         //for test
 //        textBodyViewer.setText("2023년 10월 29일 오후 11시");
 //        viewerContent = textBodyViewer.getText().toString();
-        startAlarm();
+//        try {
+////            startAlarm(setupAlarm(stringToDate(viewerContent)));
+//            startAlarm(setupAlarm(stringToDate("오후1시57분")));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void clickUp() {
@@ -306,21 +315,16 @@ public class TextActivity extends AppCompatActivity {
         }
     }
 
-    private void startAlarm() {
-        try {
-            boolean alarmRes = setupAlarm(stringToDate(viewerContent));
-            if (alarmRes) {
-                SharedPreferences alarmPref = getSharedPreferences("ALARM_RES", Context.MODE_PRIVATE);
-                SharedPreferences.Editor prefEditor = alarmPref.edit();
-                prefEditor.putString("flag", iFlag);
-                prefEditor.putString("filePath", iFilePath);
-                prefEditor.apply();
-                speak(dateTime + "에 알람이 울립니다.");
-            } else
-                speak("알람을 설정할 수 없습니다.");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+    private void startAlarm(boolean alarmRes) {
+        if (alarmRes) {
+            SharedPreferences alarmPref = getSharedPreferences("ALARM_RES", Context.MODE_PRIVATE);
+            SharedPreferences.Editor prefEditor = alarmPref.edit();
+            prefEditor.putString("flag", iFlag);
+            prefEditor.putString("filePath", iFilePath);
+            prefEditor.apply();
+            speak(dateTime + "에 알람이 울립니다.");
+        } else
+            speak("알람을 설정할 수 없습니다.");
     }
 
     private boolean setupAlarm(Date date) {
@@ -329,12 +333,9 @@ public class TextActivity extends AppCompatActivity {
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
 
         Calendar calendar = Calendar.getInstance();
-//        calendar.setTime(date);
-        calendar.setTime(delayForTest());
+        calendar.setTime(date);
+//        calendar.setTime(delayForTest());
         calendar.set(Calendar.SECOND, 0);
-
-        Log.d("현재시각이 언제길래", Calendar.getInstance().getTime().toString());
-        Log.d("설정시각이 언제길래", String.valueOf(calendar.getTime()));
 
         if (calendar.before(Calendar.getInstance())) { //설정시간이 현재시간 보다 이전일 경우
             return false;
@@ -410,7 +411,6 @@ public class TextActivity extends AppCompatActivity {
                 try {
                     Thread.sleep(500);
                     speak("파일을 분석하고 있습니다.");
-                    Thread.sleep(1000);
                     speakFocus();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -519,7 +519,10 @@ public class TextActivity extends AppCompatActivity {
 
     private Date delayForTest() { //for test
         Date current = new Date();
-        return new Date(current.getTime() + (long) 60000);
+        Date delay = new Date(current.getTime() + (long) 60000);
+        Log.d("현재시각이 언제길래", Calendar.getInstance().getTime().toString());
+        Log.d("설정시각이 언제길래", String.valueOf(delay.getTime()));
+        return delay;
     }
 
     private String toDateForm(String input) {
@@ -539,7 +542,7 @@ public class TextActivity extends AppCompatActivity {
             year = yearMatcher.group(0);
             date = date.replace("yyyy", year.substring(0, 4));
         }
-        Log.d("년", date.toString());
+        Log.d("년", date);
 
         // 월 추출
         Pattern monthPattern = Pattern.compile("\\d{1,2}월");
@@ -548,7 +551,7 @@ public class TextActivity extends AppCompatActivity {
             month = monthMatcher.group(0);
             date = date.replace("MM", String.format("%02d", Integer.parseInt(month.substring(0, month.length() - 1))));
         }
-        Log.d("월", date.toString());
+        Log.d("월", date);
 
         // 일 추출
         Pattern dayPattern = Pattern.compile("\\d{1,2}일");
@@ -557,7 +560,7 @@ public class TextActivity extends AppCompatActivity {
             day = dayMatcher.group(0);
             date = date.replace("dd", String.format("%02d", Integer.parseInt(day.substring(0, day.length() - 1))));
         }
-        Log.d("일", date.toString());
+        Log.d("일", date);
 
         // 시간 추출
         Pattern hourPattern = Pattern.compile("\\d{1,2}시");
@@ -573,7 +576,7 @@ public class TextActivity extends AppCompatActivity {
                 date = date.replace("HH", String.format("%02d", i));
             }
         }
-        Log.d("시", date.toString());
+        Log.d("시", date);
 
         // 분 추출
         Pattern minutePattern = Pattern.compile("\\d{1,2}분");
@@ -582,15 +585,15 @@ public class TextActivity extends AppCompatActivity {
             minute = minuteMatcher.group(0);
             date = date.replace("mm", String.format("%02d", Integer.parseInt(minute.substring(0, minute.length() - 1))));
         }
-        Log.d("분", date.toString());
+        Log.d("분", date);
 
         Calendar calendar = Calendar.getInstance();
         date = date.replace("yyyy", String.valueOf(calendar.get(Calendar.YEAR)));
-        date = date.replace("MM", String.valueOf(calendar.get(Calendar.MONTH)));
+        date = date.replace("MM", String.valueOf(calendar.get(Calendar.MONTH) + 1));
         date = date.replace("dd", String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH)));
         date = date.replace("HH", String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY)));
         date = date.replace("mm", "00");
-        Log.d("결과", date.toString());
+        Log.d("결과", date);
 
         return date;
     }

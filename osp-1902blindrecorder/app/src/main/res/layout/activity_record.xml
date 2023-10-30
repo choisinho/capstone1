@@ -38,7 +38,7 @@
             android:focusable="false"
             android:text="녹음시작"
             android:textColor="@color/colorWhite"
-            android:textSize="16sp"
+            android:textSize="32sp"
             android:textStyle="bold" />
     </LinearLayout>
 

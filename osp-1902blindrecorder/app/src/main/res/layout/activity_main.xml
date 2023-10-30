@@ -26,7 +26,7 @@
             android:textAlignment="center"
             android:typeface="monospace"
             android:textColor="@color/colorBlack"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="italic|bold" />
 
 
@@ -68,7 +68,7 @@
                 android:focusable="false"
                 android:text="음성 메모"
                 android:textColor="@color/colorWhite"
-                android:textSize="16sp"
+                android:textSize="32sp"
                 android:textStyle="bold" />
 
             <Button
@@ -83,7 +83,7 @@
                 android:focusable="false"
                 android:text="텍스트 메모"
                 android:textColor="@color/colorWhite"
-                android:textSize="16sp"
+                android:textSize="32sp"
                 android:textStyle="bold" />
 
             <Button
@@ -98,7 +98,7 @@
                 android:focusable="false"
                 android:text="폴더 관리"
                 android:textColor="@color/colorWhite"
-                android:textSize="16sp"
+                android:textSize="32sp"
                 android:textStyle="bold" />
 
             <Button
@@ -113,7 +113,7 @@
                 android:focusable="false"
                 android:text="메모 찾기"
                 android:textColor="@color/colorWhite"
-                android:textSize="16sp"
+                android:textSize="32sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>

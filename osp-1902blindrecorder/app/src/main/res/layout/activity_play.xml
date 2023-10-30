@@ -41,7 +41,7 @@
                 android:focusable="false"
                 android:text="녹음파일 재생"
                 android:textColor="@color/colorWhite"
-                android:textSize="16sp"
+                android:textSize="32sp"
                 android:textStyle="bold" />
 
 <!--            <Button-->

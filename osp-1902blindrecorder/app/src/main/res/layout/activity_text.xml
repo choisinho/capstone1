@@ -33,7 +33,7 @@
             android:padding="20dp"
             android:text="메모를 불러오는 중..."
             android:textColor="@color/colorYellow"
-            android:textSize="24sp"
+            android:textSize="36sp"
             android:textStyle="bold" />
 
         <Button
@@ -48,7 +48,7 @@
             android:focusable="false"
             android:text="알람 설정하기"
             android:textColor="@color/colorWhite"
-            android:textSize="16sp"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
         <Button
@@ -63,7 +63,7 @@
             android:focusable="false"
             android:text="전화번호로 통화하기"
             android:textColor="@color/colorWhite"
-            android:textSize="16sp"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
 <!--        <Button-->

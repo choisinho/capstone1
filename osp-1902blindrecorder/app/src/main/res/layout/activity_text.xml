@@ -22,7 +22,7 @@
         <Button
             android:id="@+id/text_body_viewer"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="300dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="10dp"
@@ -66,20 +66,34 @@
             android:textSize="32sp"
             android:textStyle="bold" />
 
-<!--        <Button-->
-<!--            android:id="@+id/text_body_map"-->
-<!--            style="@style/Base.Widget.AppCompat.Button.Borderless"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="70dp"-->
-<!--            android:layout_marginHorizontal="10dp"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:background="@drawable/app_button"-->
-<!--            android:clickable="false"-->
-<!--            android:focusable="false"-->
-<!--            android:text="지도 앱을 실행하기"-->
-<!--            android:textColor="@color/colorWhite"-->
-<!--            android:textSize="16sp"-->
-<!--            android:textStyle="bold" />-->
+        <Button
+            android:id="@+id/text_body_message"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/app_button"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="문자 메시지 전송하기"
+            android:textColor="@color/colorWhite"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+        <Button
+            android:id="@+id/text_body_kakao"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/app_button"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="카톡으로 공유하기"
+            android:textColor="@color/colorWhite"
+            android:textSize="32sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <ProgressBar

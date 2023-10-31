@@ -340,7 +340,6 @@ public class FoldersActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    vibrate(1000);
                     speak("폴더를 변경하시려면 변경을, 삭제하시려면 삭제를 말씀해주세요.");
                     Thread.sleep(6500);
                     Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -380,8 +379,8 @@ public class FoldersActivity extends AppCompatActivity {
                         toast.show();
                         requestSpeech();
                         //테스트
-                        changeTestFolder("테스트");
-                        Log.d("테스트", "바뀜");
+//                        changeTestFolder("테스트");
+//                        Log.d("테스트", "바뀜");
                     } else {
                         // 왼쪽 스와이프
                         Toast toast = Toast.makeText(FoldersActivity.this, "←", Toast.LENGTH_SHORT);
@@ -430,6 +429,7 @@ public class FoldersActivity extends AppCompatActivity {
 
         @Override
         public void onLongPress(MotionEvent event) {
+            vibrate(1000);
             requestSpeech();
         }
     }
